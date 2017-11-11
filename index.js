@@ -89,7 +89,7 @@ app.get('/:username/', function(req,res) {
 //send post request with one parameter, category
 //returns response with question object in json format
 //parameter relevant to alexa should be the question parameter, which contains the text of the question
-app.post('/question', function(req,res) {
+app.get('/question', function(req,res) {
   Question.count().exec(function(err,count) {
     var random = Math.floor(Math.random()*count);
     Question.findOne({category: req.body.category}).skip(random).lean().exec(function (err,question) {
@@ -218,7 +218,7 @@ function analyzeTone(params,question,req,res) {
 //send post request with three parameters, text, question id, and username
 //returns response with one parameter, text (the suggested advice), in json format
 //also updates user stats
-app.post('/answer', function(req,res) {
+app.get('/answer', function(req,res) {
   Question.findOne({id: req.body.id}).exec(function (err,question) {
     var text = req.body.text;
     const input = {
