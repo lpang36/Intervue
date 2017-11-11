@@ -70,30 +70,16 @@ app.get('/', function(req,res) {
   res.render('home');
 });
 
-//display user stats, or 404 page if not found
-app.get('/:username/', function(req,res) {
-  User.findOne({name: req.params.username}).exec(function (err,user) {
-    if (!err) {
-      console.log(user);
-      res.render('user',{
-        user: user
-      });
-    }
-    else {
-      res.render('notFound');
-    }
-  });
-});
-
 //post request to get interview q
-//send post request with one parameter, category
+//send post request
 //returns response with question object in json format
 //parameter relevant to alexa should be the question parameter, which contains the text of the question
-app.get('/question', function(req,res) {
+app.get('/question/', function(req,res) {
   Question.count().exec(function(err,count) {
     var random = Math.floor(Math.random()*count);
-    Question.findOne({category: req.body.category}).skip(random).lean().exec(function (err,question) {
+    Question.findOne({}).skip(random).lean().exec(function (err,question) {
       res.send(JSON.stringify(question));
+      res.end();
     });
   });
 });
@@ -139,7 +125,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     var sum = 0;
     tone.forEach(function(t){sum+=t;});
     var score = (sum/13+(length>50&&length<700)+keywordMatches)/3; //some aggregate of the above, will be between 0 and 1
-    User.findOne({name: req.body.username}).exec(function (err2,user) {
+    User.findOne({name: req.params.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
         user.numQuestions = user.numQuestions+1;
@@ -183,6 +169,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     res.send({
       text: advice //advice to give
     });
+    res.end();
   });
 }
 
@@ -225,17 +212,32 @@ function analyzeTone(params,question,req,res) {
 //send post request with three parameters, text, question id, and username
 //returns response with one parameter, text (the suggested advice), in json format
 //also updates user stats
-app.get('/answer', function(req,res) {
-  Question.findOne({id: req.body.id}).exec(function (err,question) {
-    var text = req.body.text;
+app.get('/answer/:text/:id/:username/', function(req,res) {
+  console.log("answer");
+  Question.findOne({id: decodeURI(parseInt(req.params.id))}).exec(function (err,question) {
+    var text = decodeURI(req.params.text);
     const input = {
       'textToAnalyze': text,
       'username': '3ca875ed-5a26-44a7-9aea-9fe5d9dfd790',
       'password': 'DVZxwlNzF701',
       'url' : 'https://gateway.watsonplatform.net/tone-analyzer/api',
       'use_unauthenticated' : false
-    }
+    };                                
     analyzeTone(input,question,req,res);
+  });
+});
+
+//display user stats, or 404 page if not found
+app.get('/:username/', function(req,res) {
+  User.findOne({name: req.params.username}).exec(function (err,user) {
+    if (!err) {
+      res.render('user',{
+        user: user
+      });
+    }
+    else {
+      res.render('notFound');
+    }
   });
 });
 
