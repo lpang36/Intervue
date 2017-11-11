@@ -242,7 +242,7 @@ app.get('/live/:username/', function(req,res) {
     }
   });
 });
-/*
+
 //display user stats, or 404 page if not found
 app.get('/:username/', function(req,res) {
   User.findOne({name: req.params.username}).exec(function (err,user) {
@@ -256,7 +256,7 @@ app.get('/:username/', function(req,res) {
     }
   });
 });
-*/
+
 io.on('connection',function(socket){
   console.log("a user has connected");
 });
