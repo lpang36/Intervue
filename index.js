@@ -50,8 +50,8 @@ var questionSchema = mongoose.Schema({
   defaultAdvice: String
 }, {collection:'questions'});
 
-var user = mongoose.model("user",userSchema);
-var question = mongoose.model("question",questionSchema);
+var User = mongoose.model("User",userSchema);
+var Question = mongoose.model("Question",questionSchema);
 
 //express web app
 var express = require('express');
@@ -74,6 +74,7 @@ app.get('/', function(req,res) {
 app.get('/:username/', function(req,res) {
   User.findOne({name: req.params.username}).exec(function (err,user) {
     if (!err) {
+      console.log(user);
       res.render('user',{
         user: user
       });
@@ -111,9 +112,10 @@ app.post('/answer', function(req,res) {
     var count = 0;
     userKeywords.forEach(function(word){
       question.keywords.forEach(function(keyword){
-        if (keyword.substr(word)!=-1||word.substr(keyword)!=-1) {
+        var flag = false;
+        if ((keyword.substr(word)!=-1||word.substr(keyword)!=-1)&&!flag) {
           count++;
-          break;
+          flag = true;
         }
       });
     });

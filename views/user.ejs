@@ -1,0 +1,200 @@
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script src="http://www.chartjs.org/samples/latest/utils.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <h1>
+    <%= user.name %>
+  </h1>
+  <div>
+    <canvas id="nums" width="400px" height="400px"></canvas>
+  </div>
+  <div>
+    <canvas id="scores" width="400px" height="400px"> </canvas>
+  </div>
+  <div>
+    <canvas id="emotion" width="400px" height="400px"> </canvas>
+  </div>
+  <div>
+    <canvas id="language" width="400px" height="400px"> </canvas>
+  </div>
+  <div>
+    <canvas id="social" width="400px" height="400px"> </canvas>
+  </div>
+  <div>
+    <canvas id="keywords" width="400px" height="400px"> </canvas>
+  </div>
+  <script>
+    var xnums = document.getElementById("nums").getContext('2d');
+    var xscores = document.getElementById("scores").getContext('2d');
+    var xemotion = document.getElementById("emotion").getContext('2d');
+    var xlanguage = document.getElementById("language").getContext('2d');
+    var xsocial = document.getElementById("social").getContext('2d');
+    var xkeywords = document.getElementById("keywords").getContext('2d');
+    var nums = new Chart(xnums,{
+      type: 'pie',
+      responsive: false,
+      data: {
+        labels: ['Behavioural','Technical'],
+        datasets: [{
+          backgroundColor: [
+            window.chartColors.red,
+            window.chartColors.blue,
+            window.chartColors.yellow,
+            window.chartColors.green,
+            window.chartColors.blue,
+          ],
+          data: [<%= user.numQuestionsPerCategory %>]
+        }]
+      },
+      options: {
+        legend: {
+          display: true
+        },
+        title: {
+          display: true,
+          text: "Number of Questions"
+        }
+      }
+    });
+    var scores = new Chart(xscores,{
+      type: 'bar',
+      responsive: false,
+      data: {
+        labels: ['All','Behavioural','Technical'],
+        datasets: [{
+          backgroundColor: 'rgb(132,99,255)',
+          borderColor: 'rgb(132,99,255)',
+          data: [<%= user.score %>].concat(<%= user.scorePerCategory %>)
+        }]
+      },
+      options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: "Average Score"
+        }
+      }
+    });
+    var emotion = new Chart(xemotion,{
+      type: 'bar',
+      responsive: false,
+      data: {
+        labels: ['Anger','Disgust','Fear','Joy','Sadness'],
+        datasets: [{
+          backgroundColor: 'rgb(132,99,255)',
+          borderColor: 'rgb(132,99,255)',
+          data: [<%= user.tone %>].slice(0,6)
+        }]
+      },
+      options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: "Emotional Tone"
+        }
+      }
+    });
+    var language = new Chart(xlanguage,{
+      type: 'bar',
+      responsive: false,
+      data: {
+        labels: ['Analytical','Confident','Tentative'],
+        datasets: [{
+          backgroundColor: 'rgb(132,99,255)',
+          borderColor: 'rgb(132,99,255)',
+          data: [<%= user.tone %>].slice(6,9)
+        }]
+      },
+      options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: "Linguistic Tone"
+        }
+      }
+    });
+    var social = new Chart(xsocial,{
+      type: 'bar',
+      responsive: false,
+      data: {
+        labels: ['Openness','Conscientousness','Extraversion','Agreeableness','Emotional Range'],
+        datasets: [{
+          backgroundColor: 'rgb(132,99,255)',
+          borderColor: 'rgb(132,99,255)',
+          data: [<%= user.tone %>].slice(9,14)
+        }]
+      },
+      options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: "Social Tone"
+        }
+      }
+    });
+    var keywords = new Chart(xkeywords,{
+      type: 'pie',
+      responsive: false,
+      data: {
+        labels: ['Hit','Missed'],
+        datasets: [{
+          backgroundColor: [
+            window.chartColors.red,
+            window.chartColors.blue,
+            window.chartColors.yellow,
+            window.chartColors.green,
+            window.chartColors.blue,
+          ],
+          data: [<%= user.keywordMatches %>,1-<%= user.keywordMatches %>]
+        }]
+      },
+      options: {
+        legend: {
+          display: true
+        },
+        title: {
+          display: true,
+          text: "Keyword Matches"
+        }
+      }
+    });
+  </script>
+</body>
