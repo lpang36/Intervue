@@ -1,5 +1,4 @@
 //various libraries
-var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var mongoose = require('mongoose');
@@ -60,6 +59,9 @@ app.use('/static',express.static(__dirname+'/static'));
 app.set('view engine', 'ejs');
 app.set('views','./views');
 
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -74,10 +76,11 @@ app.get('/', function(req,res) {
 //send post request
 //returns response with question object in json format
 //parameter relevant to alexa should be the question parameter, which contains the text of the question
-app.get('/question/', function(req,res) {
+app.get('/question/:username', function(req,res) {
   Question.count().exec(function(err,count) {
     var random = Math.floor(Math.random()*count);
     Question.findOne({}).skip(random).lean().exec(function (err,question) {
+      io.emit('question',{question: question, username: req.params.username});
       res.send(JSON.stringify(question));
       res.end();
     });
@@ -166,6 +169,7 @@ function analyzeKeywords(params,question,tone,req,res) {
       advice+="Try to keep your response to a shorter time.";
     else if (length<50)
       advice+="Try to give a more detailed response.";
+    io.emit('answer',{advice: advice, username: req.params.username, tone: tone, score: score, answer: params.textToAnalyze});
     res.send({
       text: advice //advice to give
     });
@@ -213,7 +217,6 @@ function analyzeTone(params,question,req,res) {
 //returns response with one parameter, text (the suggested advice), in json format
 //also updates user stats
 app.get('/answer/:text/:id/:username/', function(req,res) {
-  console.log("answer");
   Question.findOne({id: decodeURI(parseInt(req.params.id))}).exec(function (err,question) {
     var text = decodeURI(req.params.text);
     const input = {
@@ -224,6 +227,19 @@ app.get('/answer/:text/:id/:username/', function(req,res) {
       'use_unauthenticated' : false
     };                                
     analyzeTone(input,question,req,res);
+  });
+});
+
+app.get('/live/:username/', function(req,res) {
+  User.findOne({name:req.params.username}).exec(function(err,user) {
+    if (!err) {
+      res.render('index',{
+        user: user
+      });
+    }
+    else {
+      res.render('notFound');
+    }
   });
 });
 
@@ -241,9 +257,13 @@ app.get('/:username/', function(req,res) {
   });
 });
 
-var server = app.listen((process.env.PORT || 5000), function () {
-  var host = server.address().address
-  var port = server.address().port
+io.on('connection',function(socket){
+  console.log("a user has connected");
+});
+
+http.listen((process.env.PORT || 5000), function () {
+  var host = http.address().address
+  var port = http.address().port
   console.log("Example app listening at http://%s:%s", host, port);
   /*
   var text = "Let us banish forever all traces of wonder from our lives. Yet there are believers who insist that, using recent advances in archaeology, the ship can be found. They point, for example, to a wooden sloop from the 1770s unearthed during excavations at the World Trade Center site in lower Manhattan, or the more than 40 ships, dating back perhaps 800 years, discovered in the Black Sea earlier this year.";

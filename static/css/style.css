@@ -1,4 +1,71 @@
-div {
+.chartdiv {
     width:400px;
     height:400px;
+}
+
+* {
+  font-family: 'Open Sans', sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  animation: fadein 1s;
+}
+
+img {
+  display: inline-block;
+}
+
+#div1 {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+h1 {
+  float:left;
+  margin:2px;
+}
+
+button {
+  margin: 15px;
+  padding: 15px 20px;
+  color:white;
+  background-color: #3333cc;
+  border-radius: 5px;
+  text-decoration: none;
+  border:none;
+  text-align:center;
+}
+
+#title {
+  color: #00caff;
+  float:right;
+  font-size: 36pt;
+  display: inline-block;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeout {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+#nameEntry {
+  animation: fadein 1s;
+  transition: opacity 0.25s linear;
+}
+
+#questionEntry {
+  animation: fadein 1s;
+  display:none;
 }

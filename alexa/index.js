@@ -4,6 +4,8 @@ const Alexa = require('alexa-sdk');
 var http = require('http');
 var https = require('https');
 var util = require('util');
+const user = "John";
+var qid = 0;
 
 const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
 var serviceHost = 'https://intervue.herokuapp.com';
@@ -62,23 +64,21 @@ function onLaunch(launchRequest, session, callback) {
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
-    console.log(intentRequest);
+    var param = "";
+
     if (intentName === 'AlexaAsks') {
         questions();
-    }
-    else if (intentName === 'LaunchRequest'){
-        var output = "Alexa please work"; 
-        callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
-    }
-    else if (intentName === 'UserAnswers') {
-            var message = intentRequest.intent.slots.answer.value;
+        param = "/question/"+user;
+    } else if (intentName === 'UserAnswers') {
+            var message = this.event.answer.value;
+        param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
             handleSessionEndRequest(callback);
     } else {
             throw new Error('Invalid intent');
     }
 
-    handleTestRequest(intent, session, callback);
+    handleTestRequest(intent, session, callback, param);
 }
 /**
  * Called when the user ends the session.
@@ -89,7 +89,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 }
 
-function handleTestRequest(intent, session, callback) {
+function handleTestRequest(intent, session, callback, param) {
     console.log("intent: ", util.inspect(intent, {depth: 5}));
     console.log("session: ", util.inspect(session, {depth: 5}));
     var urlData = '';

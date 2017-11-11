@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Intervue</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <!-- Allows the inclusion of the jQuery library for JavaScript. -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Allows the inclusion of the Bootstrap framework to improve mobile readability. -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <CENTER>
+  <div id="div1">
+  <img src="https://lh3.googleusercontent.com/_mv8kwmP7VqQyGu0xkxrw81Lr-y19e2ENx-CmHs6zb_pancYegN_3UfsBKQAueYCTs9KQng1FUol-Cw7MZOd=w1920-h949"></img>
+</div>
+  <div id="nameEntry">
+  <form>
+  <h3>Enter your name</h3>
+  <input type="text" id="nameField"></input>
+</form>
+  <script>
+function logName() {
+  var value = $("#nameField").val();
+  window.location.href="/live/"+value;
+}
+  </script>
+<button type="Submit" onclick="logName()">Enter Name</input>
+</div>
+</CENTER>
+</body>
+</html>
