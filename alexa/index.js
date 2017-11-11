@@ -5,16 +5,6 @@ var http = require('http');
 var https = require('https');
 var util = require('util');
 
-http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-        resp.on('data', function(ip) {
-            console.log("This IP address is " + ip.toString());
-        });
-        resp.on('error',
-            function() {
-                console.log('oops');
-            });
-    });
-
 const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
 var serviceHost = 'https://intervue.herokuapp.com';
 
@@ -71,13 +61,17 @@ function onLaunch(launchRequest, session, callback) {
  */
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
-
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
-
+    console.log(intentRequest);
     if (intentName === 'AlexaAsks') {
         questions();
-    } else if (intentName === 'UserAnswers') {
-            var message = this.event.answer.value;
+    }
+    else if (intentName === 'LaunchRequest'){
+        var output = "Alexa please work"; 
+        callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+    }
+    else if (intentName === 'UserAnswers') {
+            var message = intentRequest.intent.slots.answer.value;
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
             handleSessionEndRequest(callback);
     } else {
