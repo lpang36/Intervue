@@ -13,6 +13,8 @@ var handlers = {
   }
 };
 
+// take the speech, convert to text, send to server
+
 exports.handler = function(event, context, callback){
   var alexa = Alexa.handler(event, context);
     alexa.registerHandlers(handlers);
