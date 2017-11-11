@@ -157,7 +157,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
     var fillerText = params.textToAnalyze.toUpperCase();
     if((/\bUM\b/).test(fillerText) ||
-       (/\bUH\b/).test(fillertText) ||
+       (/\bUH\b/).test(fillerText) ||
        (/\bAH\b/).test(fillerText) ||
        (/\bLIKE\b/).test(fillerText) ||
        (/\bOKAY\b/).test(fillerText))
