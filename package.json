@@ -1,14 +1,10 @@
 {
   "name": "caliorbust",
   "version": "1.0.0",
-  "description": "alexa",
+  "description": "intervue",
   "main": "index.js",
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Ryan, Yingning, Lawrence, Chandler",
-  "license": "ISC",
   "dependencies": {
     "alexa-app": "^4.2.0",
     "body-parser": "^1.18.2",
@@ -26,6 +22,8 @@
     "request-promise": "^4.2.2",
     "url": "^0.11.0",
     "watson-developer-cloud": "^2.42.0"
-
+  },
+  "engines": {
+    "node": "6.11.1"
   }
 }
