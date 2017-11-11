@@ -5,6 +5,9 @@
   "main": "index.js",
   "devDependencies": {},
   "author": "Ryan, Yingning, Lawrence, Chandler",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "alexa-app": "^4.2.0",
     "body-parser": "^1.18.2",
