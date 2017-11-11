@@ -4,9 +4,11 @@ const request = require('request');
 
 const BASE_URL = "insert lawrence's server";
 
-const questions = {
+
+function sendAnswer(recordedAnswer) {
 
 };
+
 
 function buildSpeechletResponse(feedback, shouldEndSession) {
 
