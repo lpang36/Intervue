@@ -4,16 +4,25 @@
       "intent": "Talking",
       "slots": [
         {
+          "name": "talking",
+          "type": "AMAZON.LITERAL"
+        },
+      ]
+    },
+    {
+      "intent": "Answer",
+      "slots": [
+        {
           "name": "answer",
           "type": "AMAZON.LITERAL"
         },
       ]
     },
     {
-      "intent": "AlexaResponse",
+      "intent": "LaunchRequest",
       "slots": [
         {
-          "name": "alexareponse",
+          "name": "alexaWake",
           "type": "AMAZON.LITERAL"
         },
       ]
