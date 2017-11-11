@@ -1,12 +1,32 @@
 'use strict';
 
 const request = require('request');
+var ENDPOINT = 'https://intervue.herokuapp.com/';
 
-const BASE_URL = "insert lawrence's server";
+function GetPost() {
+  GetPost.prototype.requestFeedback = function(feedback,uri) {
+    //request for question: uri = "question"
+    //request for answer: uri = "answer"
+    return this.getFeedback(feedback,uri).then(
+      function(response) {
+        console.log('success' + feedback);
+        return response.body;
+      }
+    );
+  };
 
-const questions = {
+  GetPost.prototype.getFeedback = function(feedback,uri) {
+    var options = {
+      method: 'GET',
+      uri: ENDPOINT + uri,
+      resolveWithFullResponse: true,
+      json: true
+    };
+    return rp(options);
+  };
+}
 
-};
+module.exports = GetPost;
 
 function buildSpeechletResponse(feedback, shouldEndSession) {
 
@@ -42,12 +62,10 @@ function onIntent(intentRequest, session, callback) {
    const intent = intentRequest.intent;
    const intentName = intentRequest.intent.name;
 
-   if (intentName === 'getQuestion') {
-       categorySelect(intent, session, callback);
-   } else if (intentName === 'answerQuestion') {
-       answerQuestion(intent, session, callback);
-   } else if (intentName === 'repeatQuestion') {
-       repeatQuestion(intent, session, callback);
+   if (intentName === 'AlexaAsks') {
+       questions();
+   } else if (intentName === 'UserAnswers') {
+       var message = stringify(  );;
    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
        handleSessionEndRequest(callback);
    } else {

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Intervue</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <!-- Allows the inclusion of the jQuery library for JavaScript. -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Allows the inclusion of the Bootstrap framework to improve mobile readability. -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+* {
+  font-family: 'Open Sans', sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  animation: fadein 1s;
+}
+
+img {
+  display: inline-block;
+}
+
+#div1 {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+h1 {
+  float:left;
+  margin:2px;
+}
+
+button {
+  margin: 15px;
+  padding: 15px 20px;
+  color:white;
+  background-color: #3333cc;
+  border-radius: 5px;
+  text-decoration: none;
+  border:none;
+  text-align:center;
+}
+
+#title {
+  color: #00caff;
+  float:right;
+  font-size: 36pt;
+  display: inline-block;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeout {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+#nameEntry {
+  animation: fadein 1s;
+  transition: opacity 0.25s linear;
+}
+
+#questionEntry {
+  animation: fadein 1s;
+  display:none;
+}
+
+</style>
+</head>
+<body>
+  <script>
+  var name3;
+  function logName() {
+    name = document.getElementById("nameField").value;
+    document.getElementById("name2").innerHTML = "Hi, " + name + ". Let's help you prepare for your interview.";
+    document.getElementById("nameEntry").style.opacity = '0';
+    var element = document.getElementById("nameEntry");
+    setTimeout (function(){document.getElementById("questionEntry").style.display = "block";
+      element.parentNode.removeChild(element);}, 1000);
+};
+  var questions = ["What is your greatest strength?", "What is your greatest weakness?", "Tell me about yourself.", "Why should we hire you?", "What are your salary expectations?", "Why are you leaving or have left your job?", "Why do you want this job?", "How do you handle stress and pressure?", "Describe a difficult work situation / project and how you overcame it.", "What are your goals for the future?"];
+  function addRandomQuestion(min, max, list) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  var currentQ = list[Math.floor(Math.random() * (max - min + 1)) + min]; //The maximum is inclusive and the minimum is inclusive
+  console.log(currentQ);
+  var li = "<li>";
+  $("ul").append(li.concat(currentQ));
+  $("button").attr('disabled','disabled');
+  $("button").css("background-color", "#8585e0");
+  }
+  var answer;
+  var anger;
+  var fear;
+  var joy;
+  var sadness;
+  var confidence;
+  var unsure;
+  var feedback;
+  displayData();
+
+  function displayData() {
+    if(answer) {
+    var li = "<li>";
+    $("ul").append(li.concat("Your answer: " + answer));
+    $("ul").append(li.concat("Angry: " + anger));
+    $("ul").append(li.concat("Fear: " + fear));
+    $("ul").append(li.concat("Sadness: " + sadness));
+    $("ul").append(li.concat("Joy: " + joy));
+    $("ul").append(li.concat("Confidence: " + confidence));
+    $("ul").append(li.concat("Indecision: " + unsure));
+    $("ul").append(li.concat("Feedback from Alexa: " + feedback));
+    $("button").css("background-color", "#3333cc");
+    $("button").removeAttr('disabled');
+    //answer = undefined;
+    anger = undefined;
+    fear = undefined;
+    joy = undefined;
+    sadness = undefined;
+    confidence = undefined;
+    unsure = undefined;
+    feedback = undefined;
+    }
+  }
+  </script>
+  <CENTER>
+  <div id="div1">
+  <img src="https://lh3.googleusercontent.com/_mv8kwmP7VqQyGu0xkxrw81Lr-y19e2ENx-CmHs6zb_pancYegN_3UfsBKQAueYCTs9KQng1FUol-Cw7MZOd=w1920-h949"></img>
+</div>
+  <div id="nameEntry">
+  <form>
+  <h3>Enter your name</h3>
+  <input type="text" id="nameField"></input>
+</form>
+<button type="Submit" onclick="logName()">Enter Name</input>
+</div>
+</CENTER>
+<CENTER>
+<div id="questionEntry">
+  <h3 id="name2"> </h3>
+<button type="button" onclick="addRandomQuestion(0, 9, questions)">Generate Interview Question</button>
+<ul id="questionList"></ul>
+</div>
+</CENTER>
+</body>
+</html>
