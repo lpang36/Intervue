@@ -7,6 +7,11 @@
           "name": "answer",
           "type": "AMAZON.LITERAL"
         },
+      ]
+    },
+    {
+      "intent": "AlexaResponse",
+      "slots": [
         {
           "name": "alexareponse",
           "type": "AMAZON.LITERAL"
