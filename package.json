@@ -23,6 +23,7 @@
     "mongoose": "^4.13.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
+    "socket.io": "^2.0.4",
     "url": "^0.11.0",
     "watson-developer-cloud": "^2.42.0"
   },

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Intervue</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <!-- Allows the inclusion of the jQuery library for JavaScript. -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Allows the inclusion of the Bootstrap framework to improve mobile readability. -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <script>
+  var socket = io();
+  socket.on('question',function(data) {
+    console.log(data);
+    if (data.username!="<%= user.name %>")
+      return;
+    var li = "<li>";
+    $("ul").append(li.concat(data.question.question));
+    //$("button").attr('disabled','disabled');
+    //$("button").css("background-color", "#8585e0");
+  });
+  socket.on('answer',function(data) {
+    console.log(data);
+    if (data.username!="<%= user.name %>")
+      return;
+    displayData(data);
+  });
+  var name3;
+  window.onload = function() {
+    document.getElementById("name2").innerHTML = "Hi, " + "<%= user.name %>" + ". Let's help you prepare for your interview.";
+    setTimeout (function(){document.getElementById("questionEntry").style.display = "block";}, 1000);
+  };
+
+  function displayData(data) {
+    var li = "<li>";
+    $("ul").append(li.concat("Your answer: " + data.answer));
+    $("ul").append(li.concat("Your score: " + data.score*100 + "%"));
+    $("ul").append(li.concat("Angry: " + data.tone[0]));
+    $("ul").append(li.concat("Fear: " + data.tone[1]));
+    $("ul").append(li.concat("Sadness: " + data.tone[2]));
+    $("ul").append(li.concat("Joy: " + data.tone[3]));
+    $("ul").append(li.concat("Confidence: " + data.tone[5]));
+    $("ul").append(li.concat("Indecision: " + data.tone[7]));
+    $("ul").append(li.concat("Feedback from Alexa: " + data.advice));
+    $("button").css("background-color", "#3333cc");
+    $("button").removeAttr('disabled');
+  }
+  </script>
+<CENTER>
+<div id="questionEntry">
+  <h3 id="name2"> </h3>
+<!-- <button type="button" onclick="addRandomQuestion(0, 9, questions)">Generate Interview Question</button> -->
+<ul id="questionList"></ul>
+</div>
+</CENTER>
+</body>
+</html>
