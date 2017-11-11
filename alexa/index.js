@@ -1,51 +1,51 @@
 'use strict';
 
-const request = require('request');
-var ENDPOINT = 'https://intervue.herokuapp.com/';
+const Alexa = require('alexa-sdk');
+var http = require('http');
+var https = require('https');
+var util = require('util');
 
-function GetPost() {
-  GetPost.prototype.requestFeedback = function(feedback,uri) {
-    //request for question: uri = "question"
-    //request for answer: uri = "answer"
-    return this.getFeedback(feedback,uri).then(
-      function(response) {
-        console.log('success' + feedback);
-        return response.body;
-      }
-    );
-  };
+http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+        resp.on('data', function(ip) {
+            console.log("This IP address is " + ip.toString());
+        });
+        resp.on('error',
+            function() {
+                console.log('oops');
+            });
+    });
 
-  GetPost.prototype.getFeedback = function(feedback,uri) {
-    var options = {
-      method: 'GET',
-      uri: ENDPOINT + uri,AQQQQQ,
-      resolveWithFullResponse: true,
-      json: true
-    };
-    return request(options);
-  };
-}
+const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
+var serviceHost = 'https://intervue.herokuapp.com';
 
-module.exports = GetPost;
+exports.handler = function (event, context) {
+    try {
+        console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
-function buildSpeechletResponse(feedback, shouldEndSession) {
+        if (event.session.new) {
+            onSessionStarted({requestId: event.request.requestId}, event.session);
+        }
 
-  return {
-    outputSpeech: {
-      type: 'PlainText',
-      text: feedback,
-    },
-    shouldEndSession,
-  };
+        if (event.request.type === "LaunchRequest") {
+            onLaunch(event.request,
+                event.session,
+                function callback(sessionAttributes, speechletResponse) {
+                    context.succeed(buildResponse(sessionAttributes, speechletResponse));
+                });
+        } else if (event.request.type === "IntentRequest") {
+            onIntent(event.request,
+                event.session,
+                function callback(sessionAttributes, speechletResponse) {
+                    context.succeed(buildResponse(sessionAttributes, speechletResponse));
+                });
+        } else if (event.request.type === "SessionEndedRequest") {
+            onSessionEnded(event.request, event.session);
+            context.succeed();
+        }
+    } catch (e) {
+        context.fail("Exception: " + e);
+    }
 };
-
-function buildResponse(sessionAttributes, speechletResponse) {
-  return{
-    version: '1.0',
-    sessionAttributes,
-    response: speechletResponse,
-  };
-}
 
 function questions() {
   var numQuestions = ["What is your greatest strength?", "What is your greatest weakness?", "Tell me about yourself.", "Why should we hire you?", "What are your salary expectations?", "Why are you leaving or have left your job?", "Why do you want this job?", "How do you handle stress and pressure?", "Describe a difficult work situation / project and how you overcame it.", "What are your goals for the future?"];
@@ -53,56 +53,120 @@ function questions() {
 }
 
 function onSessionStarted(sessionStartedRequest, session) {
-  console.log('onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}')
+    console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId + ", sessionId=" + session.sessionId);
 }
 
+/**
+ * Called when the user invokes the skill without specifying what they want.
+ */
+function onLaunch(launchRequest, session, callback) {
+    console.log("onLaunch requestId=" + launchRequest.requestId + ", sessionId=" + session.sessionId);
+    var cardTitle = "Welcome"
+    var speechOutput = "Do you want to slay your next interview?"
+    callback(session.attributes, buildSpeechletResponse(cardTitle, speechOutput, "", true));
+}
+
+/**
+ * Called when the user specifies an intent for this skill.
+ */
 function onIntent(intentRequest, session, callback) {
-  console.log(`onIntent requestId=${intentRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
 
-   const intent = intentRequest.intent;
-   const intentName = intentRequest.intent.name;
+    var intent = intentRequest.intent, intentName = intentRequest.intent.name;
 
-   if (intentName === 'AlexaAsks') {
-       questions();
-   } else if (intentName === 'UserAnswers') {
-       var message = this.event.answer.value;
-   } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
-       handleSessionEndRequest(callback);
-   } else {
-       throw new Error('Invalid intent');
-   }
+    if (intentName === 'AlexaAsks') {
+        questions();
+    } else if (intentName === 'UserAnswers') {
+            var message = this.event.answer.value;
+    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
+            handleSessionEndRequest(callback);
+    } else {
+            throw new Error('Invalid intent');
+    }
+
+    handleTestRequest(intent, session, callback);
 }
-
+/**
+ * Called when the user ends the session.
+ * Is not called when the skill returns shouldEndSession=true.
+ */
 function onSessionEnded(sessionEndedRequest, session) {
-    console.log(`onSessionEnded requestId=${sessionEndedRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId + ", sessionId=" + session.sessionId);
+
 }
 
-exports.handler = (event, context, callback) => {
-    try {
-        console.log(`event.session.application.applicationId=${event.session.application.applicationId}`);
-        if (event.session.new) {
-           onSessionStarted({
-               requestId: event.request.requestId
-           }, event.session);
-       }
+function handleTestRequest(intent, session, callback) {
+    console.log("intent: ", util.inspect(intent, {depth: 5}));
+    console.log("session: ", util.inspect(session, {depth: 5}));
+    var urlData = '';
+    var url = serviceHost;
+    httpGet(url, urlData, function (response) {
+        console.log(response);
+        var responseData = JSON.parse(response);
+        var output = 'OK, asked the service';
+        callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+        },
+        function (errorMessage)
+        {
+        callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "true"));
+        }
 
-       if (event.request.type === 'LaunchRequest') {
-           onLaunch(event.request,
-               event.session,
-               (sessionAttributes, speechletResponse) => {
-                   callback(null, buildResponse(sessionAttributes, speechletResponse));
-               });
-       } else if (event.request.type === 'IntentRequest') {
-           onIntent(event.request,
-               event.session,
-               (sessionAttributes, speechletResponse) => {
-                   callback(null, buildResponse(sessionAttributes, speechletResponse));
-               });
-       } else if (event.request.type === 'SessionEndedRequest') {
-           onSessionEnded(event.request, event.session);
-           callback();
-       }
-   } catch (err) {
-       callback(err);
-   }
-};
+      );
+}
+
+// ------- Helper functions to build responses -------
+
+function buildSpeechletResponseWithoutCard(output, repromptText, shouldEndSession) {
+    return {
+        outputSpeech: {
+            type: "PlainText",
+            text: output
+        },
+        reprompt: {
+            outputSpeech: {
+                type: "PlainText",
+                text: repromptText
+            }
+        },
+        shouldEndSession: shouldEndSession
+    };
+}
+
+function buildResponse(sessionAttributes, speechletResponse) {
+    return {
+        version: "1.0",
+        sessionAttributes: sessionAttributes,
+        response: speechletResponse
+    };
+}
+
+// Create a web request and handle the response.
+function httpGet(url, urlData, callback, errorCallback) {
+   console.log("url: "+ url);
+   console.log("urlData: "+ urlData);
+    var options = {
+        host: url,
+        path: urlData,
+        rejectUnauthorized: false,
+        method: 'POST'
+    };
+    var req = https.request(options, (res) => {
+        var body = '';
+        res.on('data', (d) => {
+            body += d;
+        });
+    res.on('error', function(e) {
+        console.log("Got error: " + e.message);
+        errorCallback(e.message);
+    });
+    res.on('end', function () {
+        callback(body);
+        });
+    });
+    req.end();
+}
+
+String.prototype.trunc =
+    function (n) {
+        return this.substr(0, n - 1) + (this.length > n ? '&hellip;' : '');
+    };

@@ -1,5 +1,3 @@
-# Cali or Bust 
+# Intervue
 
-### For all the members of the anti social social club. 
-
-##### Will be renamed soon.
+### I need a job bro. 
