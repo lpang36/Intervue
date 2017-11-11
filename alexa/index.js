@@ -4,11 +4,9 @@ const request = require('request');
 
 const BASE_URL = "insert lawrence's server";
 
-
-function sendAnswer(recordedAnswer) {
+const questions = {
 
 };
-
 
 function buildSpeechletResponse(feedback, shouldEndSession) {
 
@@ -29,10 +27,9 @@ function buildResponse(sessionAttributes, speechletResponse) {
   };
 }
 
-function questions(interviewQuestions) {
-  var numQuestions[10] = {
-    /// ryan fill in dictionary of questions
-  }
+function questions() {
+  var numQuestions = ["What is your greatest strength?", "What is your greatest weakness?", "Tell me about yourself.", "Why should we hire you?", "What are your salary expectations?", "Why are you leaving or have left your job?", "Why do you want this job?", "How do you handle stress and pressure?", "Describe a difficult work situation / project and how you overcame it.", "What are your goals for the future?"];
+  return numQuestions[Math.floor(Math.random() * (9 - 0 + 1)) + 0];
 }
 
 function onSessionStarted(sessionStartedRequest, session) {
