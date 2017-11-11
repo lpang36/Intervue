@@ -100,15 +100,14 @@ app.post('/question', function(req,res) {
 
 function analyzeKeywords(params,question,tone,req,res) {
   const NLU = require('watson-developer-cloud/natural-language-understanding/v1');
-  var url = params.url || 'https://gateway.watsonplatform.net/natural-language-understanding/api/v1';
+  var url = params.url || 'https://gateway.watsonplatform.net/natural-language-understanding/api';
   var use_unauthenticated =  params.use_unauthenticated || false ;
   const nlu = new NLU({
-    'username': params.username,
-    'password': params.password,
+    'username': "ee3e97b8-c3db-43ae-b12d-0a835bfe0309",
+    'password': "v8MKD024JSAb",
     'version_date': '2017-02-27',
     'url': url,
     'use_authenticated': use_unauthenticated
-    }
   });
   const input = {
     "text": params.textToAnalyze,
@@ -130,7 +129,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     userKeywords.forEach(function(word){
       question.keywords.forEach(function(keyword){
         var flag = false;
-        if ((keyword.substr(word)!=-1||word.substr(keyword)!=-1)&&!flag) {
+        if ((keyword.indexOf(word)!=-1||word.indexOf(keyword)!=-1)&&!flag) {
           count++;
           flag = true;
         }
@@ -140,7 +139,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     var sum = 0;
     tone.forEach(function(t){sum+=t;});
     var score = (sum/13+(length>50&&length<700)+keywordMatches)/3; //some aggregate of the above, will be between 0 and 1
-    User.findOne({name: req.params.username}).exec(function (err2,user) {
+    User.findOne({name: req.body.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
         user.numQuestions = user.numQuestions+1;
@@ -155,14 +154,14 @@ function analyzeKeywords(params,question,tone,req,res) {
         user.save();
       }
     });
-    var advice = "Your score on this question was "+score+question.defaultAdvice;
-    if((anger > 0.5) || (sadness > 0.5) || (fear > 0.5))
+    var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
+    if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
       advice+="Try to sound more positive";
-    else if(tentative > 0.5)
+    else if(tone[7] > 0.5)
       advice+="Try to sound more confident in your answer";
-    else if(joy > 0.6)
+    else if(tone[3] > 0.6)
       advice+="You did well by sounding positive.";
-    else if(confidence > 0.6)
+    else if(tone[6] > 0.6)
       advice+="You did well by sounding confident";
     if (keywordMatches<0.5) {
       advice+="You should include some of these words in your reponse: ";
@@ -195,20 +194,20 @@ function analyzeTone(params,question,req,res) {
   tone_analyzer.tone({'text': params.textToAnalyze}, function(err, value) {
     value2 = JSON.stringify(value, null, 2);
     //console.log(value2);
-    for (int i = 0; i<5; i++) {
+    for (var i = 0; i<5; i++) {
       tones.push(JSON.parse(value2).document_tone.tone_categories[0].tones[i].score);
     }
-    for (int i = 0; i<3; i++) {
+    for (var i = 0; i<3; i++) {
       tones.push(JSON.parse(value2).document_tone.tone_categories[1].tones[i].score);
     }
-    for (int i = 0; i<5; i++) {
+    for (var i = 0; i<5; i++) {
       tones.push(JSON.parse(value2).document_tone.tone_categories[2].tones[i].score);
     }
     const input = {
       'textToAnalyze': params.textToAnalyze,
       'username': params.username,
       'password': params.password,
-      'url' : 'https://gateway.watsonplatform.net/natural-language-understanding/api/v1',
+      'url' : 'https://gateway.watsonplatform.net/natural-language-understanding/api',
       'use_unauthenticated' : false
     }
     analyzeKeywords(input,question,tones,req,res);
@@ -237,11 +236,25 @@ var server = app.listen((process.env.PORT || 5000), function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Example app listening at http://%s:%s", host, port);
-  //testing
+  /*
   var text = "Let us banish forever all traces of wonder from our lives. Yet there are believers who insist that, using recent advances in archaeology, the ship can be found. They point, for example, to a wooden sloop from the 1770s unearthed during excavations at the World Trade Center site in lower Manhattan, or the more than 40 ships, dating back perhaps 800 years, discovered in the Black Sea earlier this year.";
   var req = {
-    "text": text,
-    "id": 0,
-    "username": "test"
+    "body": {
+      "text": text,
+      "id": 0,
+      "username": "test"
+    }
   };
+  const input = {
+      'textToAnalyze': text,
+      'username': '3ca875ed-5a26-44a7-9aea-9fe5d9dfd790',
+      'password': 'DVZxwlNzF701',
+      'url' : 'https://gateway.watsonplatform.net/tone-analyzer/api',
+      'use_unauthenticated' : false
+  }
+  var res = {};
+  Question.findOne({id: req.body.id}).exec(function (err,question) {
+    analyzeTone(input,question,req,res);
+  });
+  */
 });
