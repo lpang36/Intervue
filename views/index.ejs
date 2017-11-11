@@ -44,7 +44,7 @@ window.onload = function() {
 }
 
   function displayData(data) {
-    var li = "";
+    var li = "<li>";
     $("ul").append(li.concat("Your answer: " + data.answer));
     $("ul").append(li.concat("Your score: " + data.score*100 + "%"));
     $("ul").append(li.concat("Angry: " + data.tone[0]));
