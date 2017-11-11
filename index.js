@@ -98,22 +98,38 @@ app.post('/question', function(req,res) {
   });
 });
 
-//post request for response to interview q
-//send post request with three parameters, text, question id, and username
-//returns response with one parameter, text (the suggested advice), in json format
-//also updates user stats
-app.post('/answer', function(req,res) {
-  Question.findOne({id: req.body.id}).exec(function (err,question) {
-    var text = req.body.text;
-    //do processing on text
-    var tone = [0,0,0,0,0,0,0,0,0,0,0,0,0];
-    var length = 0;
-    var userKeywords = [];
+function analyzeKeywords(params,question,tone,req,res) {
+  const NLU = require('watson-developer-cloud/natural-language-understanding/v1');
+  var url = params.url || 'https://gateway.watsonplatform.net/natural-language-understanding/api';
+  var use_unauthenticated =  params.use_unauthenticated || false ;
+  const nlu = new NLU({
+    'username': "ee3e97b8-c3db-43ae-b12d-0a835bfe0309",
+    'password': "v8MKD024JSAb",
+    'version_date': '2017-02-27',
+    'url': url,
+    'use_authenticated': use_unauthenticated
+  });
+  const input = {
+    "text": params.textToAnalyze,
+    "features": {
+      "keywords": {
+        "sentiment": false,
+        "emotion": false,
+        "limit": question.keywords.length
+      }
+    }
+  }
+  nlu.analyze(input,function(err,value){
+    userKeywords = []
+    value.keywords.forEach(function (keyword){
+      userKeywords.push(keyword.text);
+    });
+    var length = params.textToAnalyze.split(' ').length;
     var count = 0;
     userKeywords.forEach(function(word){
       question.keywords.forEach(function(keyword){
         var flag = false;
-        if ((keyword.substr(word)!=-1||word.substr(keyword)!=-1)&&!flag) {
+        if ((keyword.indexOf(word)!=-1||word.indexOf(keyword)!=-1)&&!flag) {
           count++;
           flag = true;
         }
@@ -123,7 +139,7 @@ app.post('/answer', function(req,res) {
     var sum = 0;
     tone.forEach(function(t){sum+=t;});
     var score = (sum/13+(length>50&&length<700)+keywordMatches)/3; //some aggregate of the above, will be between 0 and 1
-    User.findOne({name: req.params.username}).exec(function (err2,user) {
+    User.findOne({name: req.body.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
         user.numQuestions = user.numQuestions+1;
@@ -138,8 +154,15 @@ app.post('/answer', function(req,res) {
         user.save();
       }
     });
-    var advice = "Your score on this question was "+score+question.defaultAdvice;
-    //do something for tone
+    var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
+    if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
+      advice+="Try to sound more positive";
+    else if(tone[7] > 0.5)
+      advice+="Try to sound more confident in your answer";
+    else if(tone[3] > 0.6)
+      advice+="You did well by sounding positive.";
+    else if(tone[6] > 0.6)
+      advice+="You did well by sounding confident";
     if (keywordMatches<0.5) {
       advice+="You should include some of these words in your reponse: ";
       question.keywords.forEach(function(word){
@@ -154,12 +177,84 @@ app.post('/answer', function(req,res) {
       text: advice //advice to give
     });
   });
+}
+
+function analyzeTone(params,question,req,res) {
+  const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
+  var url = params.url || 'https://gateway.watsonplatform.net/tone-analyzer/api' ;
+  var use_unauthenticated =  params.use_unauthenticated || false ;
+  const tone_analyzer = new ToneAnalyzerV3({
+    'username': params.username,
+    'password': params.password,
+    'version_date': '2016-05-20',
+    'url' : url,
+    'use_unauthenticated': use_unauthenticated
+  });
+  tones = [];
+  tone_analyzer.tone({'text': params.textToAnalyze}, function(err, value) {
+    value2 = JSON.stringify(value, null, 2);
+    //console.log(value2);
+    for (var i = 0; i<5; i++) {
+      tones.push(JSON.parse(value2).document_tone.tone_categories[0].tones[i].score);
+    }
+    for (var i = 0; i<3; i++) {
+      tones.push(JSON.parse(value2).document_tone.tone_categories[1].tones[i].score);
+    }
+    for (var i = 0; i<5; i++) {
+      tones.push(JSON.parse(value2).document_tone.tone_categories[2].tones[i].score);
+    }
+    const input = {
+      'textToAnalyze': params.textToAnalyze,
+      'username': params.username,
+      'password': params.password,
+      'url' : 'https://gateway.watsonplatform.net/natural-language-understanding/api',
+      'use_unauthenticated' : false
+    }
+    analyzeKeywords(input,question,tones,req,res);
+  });
+}
+
+//post request for response to interview q
+//send post request with three parameters, text, question id, and username
+//returns response with one parameter, text (the suggested advice), in json format
+//also updates user stats
+app.post('/answer', function(req,res) {
+  Question.findOne({id: req.body.id}).exec(function (err,question) {
+    var text = req.body.text;
+    const input = {
+      'textToAnalyze': text,
+      'username': '3ca875ed-5a26-44a7-9aea-9fe5d9dfd790',
+      'password': 'DVZxwlNzF701',
+      'url' : 'https://gateway.watsonplatform.net/tone-analyzer/api',
+      'use_unauthenticated' : false
+    }
+    analyzeTone(input,question,req,res);
+  });
 });
 
 var server = app.listen((process.env.PORT || 5000), function () {
-
-   var host = server.address().address
-   var port = server.address().port
-
-   console.log("Example app listening at http://%s:%s", host, port)
+  var host = server.address().address
+  var port = server.address().port
+  console.log("Example app listening at http://%s:%s", host, port);
+  /*
+  var text = "Let us banish forever all traces of wonder from our lives. Yet there are believers who insist that, using recent advances in archaeology, the ship can be found. They point, for example, to a wooden sloop from the 1770s unearthed during excavations at the World Trade Center site in lower Manhattan, or the more than 40 ships, dating back perhaps 800 years, discovered in the Black Sea earlier this year.";
+  var req = {
+    "body": {
+      "text": text,
+      "id": 0,
+      "username": "test"
+    }
+  };
+  const input = {
+      'textToAnalyze': text,
+      'username': '3ca875ed-5a26-44a7-9aea-9fe5d9dfd790',
+      'password': 'DVZxwlNzF701',
+      'url' : 'https://gateway.watsonplatform.net/tone-analyzer/api',
+      'use_unauthenticated' : false
+  }
+  var res = {};
+  Question.findOne({id: req.body.id}).exec(function (err,question) {
+    analyzeTone(input,question,req,res);
+  });
+  */
 });
