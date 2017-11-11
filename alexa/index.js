@@ -1,12 +1,32 @@
 'use strict';
 
 const request = require('request');
+const BASE_URL = "insert local host??";
+var ENDPOINT = 'https://intervue.herokuapp.com/';
 
-const BASE_URL = "insert lawrence's server";
+function ResponseAnswer() { }
 
-const questions = {
-
+ResponseAnswer.prototype.requestFeedback = function(feedback,uri) {
+  //request for question: uri = "question"
+  //request for answer: uri = "answer"
+  return this.getFeedback(feedback,uri).then(
+    function(response) {
+      console.log('success' + feedback);
+      return response.body;
+    }
+  );
 };
+
+ResponseAnswer.prototype.getFeedback = function(feedback,uri) {
+  var options = {
+    method: 'GET',
+    uri: ENDPOINT + uri,
+    resolveWithFullResponse: true,
+    json: true
+  };
+  return rp(options);
+};
+module.exports = ResponseAnswer;
 
 function buildSpeechletResponse(feedback, shouldEndSession) {
 
