@@ -9,14 +9,23 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <!-- Allows the inclusion of the Bootstrap framework to improve mobile readability. -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <script>
-  var socket = io();
+window.onload = function() {
+  var socket = io("http://localhost:5000",{
+  transports: [
+    'websocket', 
+    'flashsocket', 
+    'htmlfile', 
+    'xhr-polling', 
+    'jsonp-polling', 
+    'polling'
+  ]
+});
   socket.on('question',function(data) {
-    console.log(data);
     if (data.username!="<%= user.name %>")
       return;
     var li = "<li>";
@@ -25,19 +34,17 @@
     //$("button").css("background-color", "#8585e0");
   });
   socket.on('answer',function(data) {
-    console.log(data);
     if (data.username!="<%= user.name %>")
       return;
     displayData(data);
   });
   var name3;
-  window.onload = function() {
     document.getElementById("name2").innerHTML = "Hi, " + "<%= user.name %>" + ". Let's help you prepare for your interview.";
     setTimeout (function(){document.getElementById("questionEntry").style.display = "block";}, 1000);
-  };
+}
 
   function displayData(data) {
-    var li = "<li>";
+    var li = "";
     $("ul").append(li.concat("Your answer: " + data.answer));
     $("ul").append(li.concat("Your score: " + data.score*100 + "%"));
     $("ul").append(li.concat("Angry: " + data.tone[0]));

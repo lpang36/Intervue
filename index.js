@@ -80,7 +80,7 @@ app.get('/question/:username', function(req,res) {
   Question.count().exec(function(err,count) {
     var random = Math.floor(Math.random()*count);
     Question.findOne({}).skip(random).lean().exec(function (err,question) {
-      io.emit('question',{question: JSON.stringify(question), username: req.params.username});
+      io.emit('question',{question: question, username: req.params.username});
       res.send(JSON.stringify(question));
       res.end();
     });
@@ -242,7 +242,7 @@ app.get('/live/:username/', function(req,res) {
     }
   });
 });
-
+/*
 //display user stats, or 404 page if not found
 app.get('/:username/', function(req,res) {
   User.findOne({name: req.params.username}).exec(function (err,user) {
@@ -256,14 +256,14 @@ app.get('/:username/', function(req,res) {
     }
   });
 });
-
+*/
 io.on('connection',function(socket){
   console.log("a user has connected");
 });
 
-var server = app.listen((process.env.PORT || 5000), function () {
-  var host = server.address().address
-  var port = server.address().port
+http.listen((process.env.PORT || 5000), function () {
+  var host = http.address().address
+  var port = http.address().port
   console.log("Example app listening at http://%s:%s", host, port);
   /*
   var text = "Let us banish forever all traces of wonder from our lives. Yet there are believers who insist that, using recent advances in archaeology, the ship can be found. They point, for example, to a wooden sloop from the 1770s unearthed during excavations at the World Trade Center site in lower Manhattan, or the more than 40 ships, dating back perhaps 800 years, discovered in the Black Sea earlier this year.";

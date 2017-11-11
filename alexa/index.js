@@ -4,6 +4,8 @@ const Alexa = require('alexa-sdk');
 var http = require('http');
 var https = require('https');
 var util = require('util');
+const user = "John";
+var qid = 0;
 
 http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
         resp.on('data', function(ip) {
@@ -73,18 +75,21 @@ function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
 
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
+    var param = "";
 
     if (intentName === 'AlexaAsks') {
         questions();
+        param = "/question/"+user;
     } else if (intentName === 'UserAnswers') {
             var message = this.event.answer.value;
+        param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
             handleSessionEndRequest(callback);
     } else {
             throw new Error('Invalid intent');
     }
 
-    handleTestRequest(intent, session, callback);
+    handleTestRequest(intent, session, callback, param);
 }
 /**
  * Called when the user ends the session.
@@ -95,7 +100,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 }
 
-function handleTestRequest(intent, session, callback) {
+function handleTestRequest(intent, session, callback, param) {
     console.log("intent: ", util.inspect(intent, {depth: 5}));
     console.log("session: ", util.inspect(session, {depth: 5}));
     var urlData = '';
