@@ -67,6 +67,10 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
+app.get('/', function(req,res) {
+  res.render('home');
+});
+
 //display user stats, or 404 page if not found
 app.get('/:username/', function(req,res) {
   User.findOne({name: req.params.username}).exec(function (err,user) {
