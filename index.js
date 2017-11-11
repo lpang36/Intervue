@@ -10,6 +10,11 @@ process.env.MONGOLAB_URI ||
 process.env.MONGOHQ_URL ||
 'mongodb://localhost/hp';
 var token;
+var categoryMap = {
+  "behavioural": 0,
+  "technical": 1
+  //update as needed
+};
 
 //define port
 var port = process.env.PORT || 5000;
@@ -95,13 +100,40 @@ app.post('/answer', function(req,res) {
   Question.findOne({id: req.body.id}).exec(function (err,question) {
     var text = req.body.text;
     //do processing on text
+    var sentiment = 0;
+    var tone = [0,0,0,0,0]; //joy anger disgust sadness fear
+    var length = 0;
+    var keywordMatches = 0; //a percentage
     User.findOne({name: req.params.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
+        user.numQuestions = user.numQuestions+1;
+        user.numQuestionsPerCategory[categoryMap[question.category]] = user.numQuestionsPerCategory[categoryMap[question.category]]+1;
+        user.sentiment = (user.sentiment*(user.numQuestions-1)+sentiment)/user.numQuestions;
+        user.length = (user.length*(user.numQuestions-1)+length)/user.numQuestions;
+        user.keywordMatches = (user.keywordMatches*(user.numQuestions-1)+keywordMatches)/user.numQuestions;
+        for (var i = 0; i<user.tone.length; i++) {
+          user.tone[i] = (user.tone[i]*(user.numQuestions-1)+tone[i])/user.numQuestions;
+        }
+        user.save();
       }
     });
+    var advice = question.defaultAdvice;
+    if (sentiment<0.25)
+      advice+="You should make your answer more positive.";
+    //do something for tone
+    if (keywordMatches<0.5) {
+      advice+="You should include some of these words in your reponse: ";
+      question.keywords.forEach(function(word){
+        advice+=word+", ";
+      });
+    }
+    if (length>700)
+      advice+="Try to keep your response to a shorter time.";
+    else if (length<50)
+      advice+="Try to give a more detailed response.";
     res.send({
-      text: "" //advice to give
+      text: advice //advice to give
     });
   });
 });
