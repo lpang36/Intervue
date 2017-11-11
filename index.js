@@ -5,7 +5,7 @@ var url = require('url');
 var mongoose = require('mongoose');
 
 //other vars
-var uristring = 
+var uristring =
 process.env.MONGOLAB_URI ||
 process.env.MONGOHQ_URL ||
 'mongodb://localhost/hp';
@@ -64,7 +64,7 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
-})); 
+}));
 
 app.get('/', function(req,res) {
   res.render('home');
@@ -155,7 +155,14 @@ function analyzeKeywords(params,question,tone,req,res) {
       }
     });
     var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
-    if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
+    var fillerText = params.textToAnalyze.toUpperCase();
+    if((/\bUM\b/).test(fillerText) ||
+       (/\bUH\b/).test(fillertText) ||
+       (/\bAH\b/).test(fillerText) ||
+       (/\bLIKE\b/).test(fillerText) ||
+       (/\bOKAY\b/).test(fillerText))
+      advice+="Try to use less filler words.";
+    else if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
       advice+="Try to sound more positive";
     else if(tone[7] > 0.5)
       advice+="Try to sound more confident in your answer";
