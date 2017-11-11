@@ -65,7 +65,7 @@ function onIntent(intentRequest, session, callback) {
    if (intentName === 'AlexaAsks') {
        questions();
    } else if (intentName === 'UserAnswers') {
-       var message = stringify(  );;
+       var message = this.event.answer.value;
    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
        handleSessionEndRequest(callback);
    } else {
