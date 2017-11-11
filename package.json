@@ -1,0 +1,12 @@
+{
+  "name": "caliorbust",
+  "version": "1.0.0",
+  "description": "alexa",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan, Yingning, Lawrence, Chandler",
+  "license": "ISC"
+}
