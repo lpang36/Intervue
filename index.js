@@ -68,6 +68,8 @@ app.get('/:username/', function(req,res) {
 
 //post request to get interview q
 //send post request with one parameter, category
+//returns response with question object in json format
+//parameter relevant to alexa should be the question parameter, which contains the text of the question
 app.post('/question', function(req,res) {
   Question.count().exec(function(err,count) {
     var random = Math.floor(Math.random()*count);
@@ -78,8 +80,20 @@ app.post('/question', function(req,res) {
 });
 
 //post request for response to interview q
+//send post request with two parameters, text and username
+//returns response with one parameter, text (the suggested advice), in json format
+//also updates user stats
 app.post('/answer', function(req,res) {
-  req.
+  var text = req.body.text;
+  //do processing on text
+  User.findOne({name: req.params.username}).exec(function (err,user) {
+    if (!err) {
+      //update user stats
+    }
+  });
+  res.send({
+    text: "" //advice to give
+  });
 });
 
 var server = app.listen((process.env.PORT || 5000), function () {
