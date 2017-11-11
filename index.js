@@ -25,15 +25,23 @@ mongoose.connect(uristring, function (err, res) {
 var userSchema = mongoose.Schema({
   name: String,
   password: String,
-  id: Number
+  id: Number,
   //add other stats
+  numQuestions: Number,
+  numQuestionsPerCategory: Array,
+  sentiment: Number,
+  tone: Array,
+  length: Number,
+  keywordMatches: Number
 }, {collection:'users'});
 
 var questionSchema = mongoose.Schema({
   question: String,
   category: String,
-  keywords: Array
+  keywords: Array,
+  id: Number,
   //add other params
+  defaultAdvice: String
 }, {collection:'questions'});
 
 var user = mongoose.model("user",userSchema);
@@ -80,19 +88,21 @@ app.post('/question', function(req,res) {
 });
 
 //post request for response to interview q
-//send post request with two parameters, text and username
+//send post request with three parameters, text, question id, and username
 //returns response with one parameter, text (the suggested advice), in json format
 //also updates user stats
 app.post('/answer', function(req,res) {
-  var text = req.body.text;
-  //do processing on text
-  User.findOne({name: req.params.username}).exec(function (err,user) {
-    if (!err) {
-      //update user stats
-    }
-  });
-  res.send({
-    text: "" //advice to give
+  Question.findOne({id: req.body.id}).exec(function (err,question) {
+    var text = req.body.text;
+    //do processing on text
+    User.findOne({name: req.params.username}).exec(function (err2,user) {
+      if (!err2) {
+        //update user stats
+      }
+    });
+    res.send({
+      text: "" //advice to give
+    });
   });
 });
 
