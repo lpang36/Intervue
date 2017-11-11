@@ -2,7 +2,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
 
 //other vars
 var uristring = 
@@ -64,6 +64,22 @@ app.get('/:username/', function(req,res) {
       res.render('notFound');
     }
   });
+});
+
+//post request to get interview q
+//send post request with one parameter, category
+app.post('/question', function(req,res) {
+  Question.count().exec(function(err,count) {
+    var random = Math.floor(Math.random()*count);
+    Question.findOne({category: req.body.category}).skip(random).lean().exec(function (err,question) {
+      res.send(JSON.stringify(question));
+    });
+  });
+});
+
+//post request for response to interview q
+app.post('/answer', function(req,res) {
+  req.
 });
 
 var server = app.listen((process.env.PORT || 5000), function () {
