@@ -36,7 +36,6 @@ var userSchema = mongoose.Schema({
   numQuestionsPerCategory: Array,
   score: Number,
   scorePerCategory: Array,
-  sentiment: Number,
   tone: Array,
   length: Number,
   keywordMatches: Number
@@ -106,11 +105,22 @@ app.post('/answer', function(req,res) {
   Question.findOne({id: req.body.id}).exec(function (err,question) {
     var text = req.body.text;
     //do processing on text
-    var sentiment = 0;
-    var tone = [0,0,0,0,0]; //joy anger disgust sadness fear
+    var tone = [0,0,0,0,0,0,0,0,0,0,0,0,0];
     var length = 0;
-    var keywordMatches = 0; //a percentage
-    var score = (sentiment+(tone[0]+tone[1]+tone[2]+tone[3]+tone[4])/5+(length>50&&length<700)+keywordMatches)/4; //some aggregate of the above, will be between 0 and 1
+    var userKeywords = [];
+    var count = 0;
+    userKeywords.forEach(function(word){
+      question.keywords.forEach(function(keyword){
+        if (keyword.substr(word)!=-1||word.substr(keyword)!=-1) {
+          count++;
+          break;
+        }
+      });
+    });
+    var keywordMatches = count/question.keywords.length; //a percentage
+    var sum = 0;
+    tone.forEach(function(t){sum+=t;});
+    var score = (sum/13+(length>50&&length<700)+keywordMatches)/3; //some aggregate of the above, will be between 0 and 1
     User.findOne({name: req.params.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
@@ -118,7 +128,6 @@ app.post('/answer', function(req,res) {
         user.numQuestionsPerCategory[categoryMap[question.category]] = user.numQuestionsPerCategory[categoryMap[question.category]]+1;
         user.score = (user.score*(user.numQuestions-1)+score)/user.numQuestions;
         user.scorePerCategory[categoryMap[question.category]] = (user.scorePerCategory[categoryMap[question.category]]*(user.numQuestionsPerCategory[categoryMap[question.category]]-1)+score)/user.numQuestionsPerCategory[categoryMap[question.category]];
-        user.sentiment = (user.sentiment*(user.numQuestions-1)+sentiment)/user.numQuestions;
         user.length = (user.length*(user.numQuestions-1)+length)/user.numQuestions;
         user.keywordMatches = (user.keywordMatches*(user.numQuestions-1)+keywordMatches)/user.numQuestions;
         for (var i = 0; i<user.tone.length; i++) {
@@ -128,8 +137,6 @@ app.post('/answer', function(req,res) {
       }
     });
     var advice = "Your score on this question was "+score+question.defaultAdvice;
-    if (sentiment<0.25)
-      advice+="You should make your answer more positive.";
     //do something for tone
     if (keywordMatches<0.5) {
       advice+="You should include some of these words in your reponse: ";
