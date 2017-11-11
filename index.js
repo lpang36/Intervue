@@ -34,6 +34,8 @@ var userSchema = mongoose.Schema({
   //add other stats
   numQuestions: Number,
   numQuestionsPerCategory: Array,
+  score: Number,
+  scorePerCategory: Array,
   sentiment: Number,
   tone: Array,
   length: Number,
@@ -104,11 +106,14 @@ app.post('/answer', function(req,res) {
     var tone = [0,0,0,0,0]; //joy anger disgust sadness fear
     var length = 0;
     var keywordMatches = 0; //a percentage
+    var score = (sentiment+(tone[0]+tone[1]+tone[2]+tone[3]+tone[4])/5+(length>50&&length<700)+keywordMatches)/4; //some aggregate of the above, will be between 0 and 1
     User.findOne({name: req.params.username}).exec(function (err2,user) {
       if (!err2) {
         //update user stats
         user.numQuestions = user.numQuestions+1;
         user.numQuestionsPerCategory[categoryMap[question.category]] = user.numQuestionsPerCategory[categoryMap[question.category]]+1;
+        user.score = (user.score*(user.numQuestions-1)+score)/user.numQuestions;
+        user.scorePerCategory[categoryMap[question.category]] = (user.scorePerCategory[categoryMap[question.category]]*(user.numQuestionsPerCategory[categoryMap[question.category]]-1)+score)/user.numQuestionsPerCategory[categoryMap[question.category]];
         user.sentiment = (user.sentiment*(user.numQuestions-1)+sentiment)/user.numQuestions;
         user.length = (user.length*(user.numQuestions-1)+length)/user.numQuestions;
         user.keywordMatches = (user.keywordMatches*(user.numQuestions-1)+keywordMatches)/user.numQuestions;
@@ -118,7 +123,7 @@ app.post('/answer', function(req,res) {
         user.save();
       }
     });
-    var advice = question.defaultAdvice;
+    var advice = "Your score on this question was "+score+question.defaultAdvice;
     if (sentiment<0.25)
       advice+="You should make your answer more positive.";
     //do something for tone
