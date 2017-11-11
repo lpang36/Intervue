@@ -18,11 +18,11 @@ function GetPost() {
   GetPost.prototype.getFeedback = function(feedback,uri) {
     var options = {
       method: 'GET',
-      uri: ENDPOINT + uri,
+      uri: ENDPOINT + uri,AQQQQQ,
       resolveWithFullResponse: true,
       json: true
     };
-    return rp(options);
+    return request(options);
   };
 }
 
@@ -65,7 +65,7 @@ function onIntent(intentRequest, session, callback) {
    if (intentName === 'AlexaAsks') {
        questions();
    } else if (intentName === 'UserAnswers') {
-       var message = stringify(  );;
+       var message = this.event.answer.value;
    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
        handleSessionEndRequest(callback);
    } else {

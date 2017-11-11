@@ -4,7 +4,7 @@
       "intent": "UserAnswers",
       "slots": [
         {
-          "name": "UserAnswers",
+          "name": "answer",
           "type": "AMAZON.LITERAL"
         },
       ]
@@ -13,7 +13,7 @@
       "intent": "AlexaAsks",
       "slots": [
         {
-          "name": "AlexaAsks",
+          "name": "feedback",
           "type": "AMAZON.LITERAL"
         },
       ]

@@ -11,7 +11,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style>
 * {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 ul {
@@ -20,8 +20,8 @@ ul {
 }
 
 li {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 100px;
+  margin-bottom: 100px;
   animation: fadein 1s;
 }
 
@@ -31,7 +31,7 @@ img {
 
 #div1 {
   display: inline-block;
-  margin: 0 auto;
+  margin: 2 auto;
 }
 
 h1 {
@@ -42,9 +42,9 @@ h1 {
 button {
   margin: 15px;
   padding: 15px 20px;
-  color:white;
-  background-color: #3333cc;
-  border-radius: 5px;
+  color: `inherit inheritwhite;
+  background-color: #33ccff;
+  border-radius: 50px;
   text-decoration: none;
   border:none;
   text-align:center;
@@ -84,7 +84,7 @@ button {
   var name3;
   function logName() {
     name = document.getElementById("nameField").value;
-    document.getElementById("name2").innerHTML = "Hi, " + name + ". Let's help you prepare for your interview.";
+    document.getElementById("name2").innerHTML = "Hello, " + name + ". Let us help you prepare for your interview.";
     document.getElementById("nameEntry").style.opacity = '0';
     var element = document.getElementById("nameEntry");
     setTimeout (function(){document.getElementById("questionEntry").style.display = "block";
@@ -99,7 +99,7 @@ button {
   var li = "<li>";
   $("ul").append(li.concat(currentQ));
   $("button").attr('disabled','disabled');
-  $("button").css("background-color", "#8585e0");
+  $("button").css("background-color", "#33ccff");
   }
   var answer;
   var anger;
@@ -137,14 +137,14 @@ button {
   </script>
   <CENTER>
   <div id="div1">
-  <img src="https://lh3.googleusercontent.com/_mv8kwmP7VqQyGu0xkxrw81Lr-y19e2ENx-CmHs6zb_pancYegN_3UfsBKQAueYCTs9KQng1FUol-Cw7MZOd=w1920-h949"></img>
+  <img src="https://lh6.googleusercontent.com/9tP_oTCrx7nIPL1FhmQJBiIX9KzdoLSyek-y0VkfWwHejV8Q8EHiRgXW9NdIQV7L8nV1dKfz3tNWQQ=w1920-h971"></img>
 </div>
   <div id="nameEntry">
   <form>
-  <h3>Enter your name</h3>
+  <h3>ENTER YOUR NAME</h3>
   <input type="text" id="nameField"></input>
 </form>
-<button type="Submit" onclick="logName()">Enter Name</input>
+<button type="Submit" onclick="logName()">ENTER</input>
 </div>
 </CENTER>
 <CENTER>
