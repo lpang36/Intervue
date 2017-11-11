@@ -1,0 +1,26 @@
+{
+  "intents": [
+    {
+      "intent": "Talking",
+      "slots": [
+        {
+          "name": "answer",
+          "type": "AMAZON.LITERAL"
+        },
+        {
+          "name": "alexareponse",
+          "type": "AMAZON.LITERAL"
+        },
+      ]
+    },
+    {
+        "intent": "AMAZON.HelpIntent"
+    },
+    {
+        "intent": "AMAZON.StopIntent"
+    },
+    {
+        "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
