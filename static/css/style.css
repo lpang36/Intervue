@@ -24,6 +24,7 @@
 ul {
   list-style: none;
   padding-left: 0;
+  margin-left: 50px;
 }
 
 li {
@@ -45,12 +46,14 @@ img {
 }
 
 #name2 {
-  text-align:center;
-  margin-left: 100px;
-  margin-right: 100px;
-  font-family: 'Lato', sans-serif;
-  font-weight: 1200;
-  font-size: 72pt;
+text-align: center;
+    margin-left: 100px;
+    margin-right: 100px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 1200;
+    font-size: 72pt;
+    width: 100%;
+    margin: 0 auto;
 }
 
 #name3 {
