@@ -24,8 +24,8 @@
         {
           "name": "alexaWake",
           "type": "AMAZON.LITERAL",
-          "samples": ["I need a job",
-         "I want to prepare for an interview, "]
+          "samples": ["to please help me get a job",
+         "to help me prepare for an interview, "]
         },
       ]
     },

@@ -17,7 +17,6 @@ exports.handler = function (event, context) {
         if (event.session.new) {
             onSessionStarted({requestId: event.request.requestId}, event.session);
         }
-
         if (event.request.type === "LaunchRequest") {
             onLaunch(event.request,
                 event.session,
@@ -69,13 +68,20 @@ function onIntent(intentRequest, session, callback) {
     if (intentName === 'AlexaAsks') {
         questions();
         param = "/question/"+user;
-    } else if (intentName === 'UserAnswers') {
-            var message = this.event.answer.value;
+      }
+
+  else if (intentName === 'LaunchRequest'){
+           var output = "gucci gucci louis louis fendi fendi prada"; 
+         callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+      }
+
+    else if (intentName === 'UserAnswers') {
+          var message = this.event.answer.value;
         param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
             handleSessionEndRequest(callback);
     } else {
-            throw new Error('Invalid intent');
+          throw new Error('Invalid intent');
     }
 
     handleTestRequest(intent, session, callback, param);
