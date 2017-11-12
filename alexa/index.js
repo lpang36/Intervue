@@ -70,9 +70,10 @@ function onIntent(intentRequest, session, callback) {
         param = "/question/"+user;
       }
 
-  else if (intentName === 'LaunchRequest'){
-           var output = "gucci gucci louis louis fendi fendi prada"; 
+      else if (intentName === 'LaunchRequest'){
+        var output = "gucci gucci louis louis fendi fendi prada";
          callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+         httpGet(serviceHost, "", callback, errorCallback); 
       }
 
     else if (intentName === 'UserAnswers') {
@@ -98,7 +99,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 function handleTestRequest(intent, session, callback, param) {
     console.log("intent: ", util.inspect(intent, {depth: 5}));
     console.log("session: ", util.inspect(session, {depth: 5}));
-    var urlData = '';
+    var urlData = param;
     var url = serviceHost;
     httpGet(url, urlData, function (response) {
         console.log(response);
@@ -148,7 +149,7 @@ function httpGet(url, urlData, callback, errorCallback) {
         host: url,
         path: urlData,
         rejectUnauthorized: false,
-        method: 'POST'
+        method: 'GET'
     };
     var req = https.request(options, (res) => {
         var body = '';
