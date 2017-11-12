@@ -12,3 +12,23 @@ h1 {
   text-align:center;
   width: fit-content;
 }  
+
+.chartdiv {
+padding-top: 10px;
+padding-bottom: 10px;
+margin: auto;
+}
+
+* {
+color: white;
+}
+
+body {
+background-image: url("/static/images/background.jpg");
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover;
+background-attachment: fixed;
+min-height:100%;
+min-width:100%;
+}

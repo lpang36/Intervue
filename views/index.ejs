@@ -44,13 +44,14 @@
   }
   function displayData(data) {
     var li = "<li>";
-    $("ul").append(li.concat("Your score: " + data.score*100 + "%"));
-    $("ul").append(li.concat("Angry: " + data.tone[0]));
-    $("ul").append(li.concat("Fear: " + data.tone[1]));
-    $("ul").append(li.concat("Sadness: " + data.tone[2]));
-    $("ul").append(li.concat("Joy: " + data.tone[3]));
-    $("ul").append(li.concat("Confidence: " + data.tone[5]));
-    $("ul").append(li.concat("Indecision: " + data.tone[7]));
+    $("ul").empty();
+    $("ul").append(li.concat("Your score: " + (data.score*100).toPrecision(3) + "%"));
+    $("ul").append(li.concat("Angry: " + data.tone[0].toPrecision(3)));
+    $("ul").append(li.concat("Fear: " + data.tone[1].toPrecision(3)));
+    $("ul").append(li.concat("Sadness: " + data.tone[2].toPrecision(3)));
+    $("ul").append(li.concat("Joy: " + data.tone[3].toPrecision(3)));
+    $("ul").append(li.concat("Confidence: " + data.tone[5].toPrecision(3)));
+    $("ul").append(li.concat("Indecision: " + data.tone[7].toPrecision(3)));
     $("ul").append(li.concat("Feedback from Alexa: " + data.advice));
     $("button").css("background-color", "#3333cc");
     $("button").removeAttr('disabled');
@@ -61,7 +62,7 @@
       <div class="slideOverlay slideCopy text-center">
         <div id="questionEntry">
           <h1 id="name2"> </h1>
-<br><br><br><br><br>s
+<br><br><br><br><br>
           <h2 id="name3">Let's get you prepared for your interview.</h2>
           <!-- <button type="button" onclick="addRandomQuestion(0, 9, questions)">Generate Interview Question</button> -->
           <ul id="questionList"></ul>

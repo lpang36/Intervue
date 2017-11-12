@@ -1,34 +1,28 @@
 <head>
   <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 <!-- jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-  <script src="http://www.chartjs.org/samples/latest/utils.js"></script>
+<script src = "/static/js/utils.js"></script>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="stylesheet" href="/static/css/chartstyle.css">
 </head>
 <body>
   <h1>
-    <%= user.name %>
+    Your Statistics
   </h1>
-    <CENTER>
-  <div class="row">  
   <div class="chartdiv">
     <canvas id="nums" width="300px" height="300px"></canvas>
   </div>
   <div class="chartdiv">
-    <canvas id="scores " width="300px" height="300px"> </canvas>
+    <canvas id="scores" width="300px" height="300px"> </canvas>
   </div>
   <div class="chartdiv">
     <canvas id="emotion" width="300px" height="300px"> </canvas>
   </div>
-    </div>
-    <div class="row">
   <div class="chartdiv">
     <canvas id="language" width="300px" height="300px"> </canvas>
   </div>
@@ -38,8 +32,6 @@
   <div class="chartdiv">
     <canvas id="keywords" width="300px" height="300px"> </canvas>
   </div>
-    </div>
-    </CENTER>
   <script>
     var xnums = document.getElementById("nums").getContext('2d');
     var xscores = document.getElementById("scores").getContext('2d');
@@ -65,10 +57,12 @@
       },
       options: {
         legend: {
-          display: true
+          display: true,
+fontColor:"white"
         },
         title: {
           display: true,
+fontColor:"white",
           text: "Number of Questions"
         }
       }
@@ -86,8 +80,14 @@
       },
       options: {
         scales: {
+xAxes: [{
+ticks: {
+fontColor:"white"
+}
+}],
             yAxes: [{
                 ticks: {
+fontColor:"white",
                     beginAtZero:true
                 }
             }]
@@ -96,6 +96,7 @@
           display: false
         },
         title: {
+fontColor:"white",
           display: true,
           text: "Average Score"
         }
@@ -113,9 +114,15 @@
         }]
       },
       options: {
-        scales: {
+                scales: {
+xAxes: [{
+ticks: {
+fontColor:"white"
+}
+}],
             yAxes: [{
                 ticks: {
+fontColor:"white",
                     beginAtZero:true
                 }
             }]
@@ -124,6 +131,7 @@
           display: false
         },
         title: {
+fontColor:"white",
           display: true,
           text: "Emotional Tone"
         }
@@ -141,9 +149,15 @@
         }]
       },
       options: {
-        scales: {
+                scales: {
+xAxes: [{
+ticks: {
+fontColor:"white"
+}
+}],
             yAxes: [{
                 ticks: {
+fontColor:"white",
                     beginAtZero:true
                 }
             }]
@@ -152,6 +166,8 @@
           display: false
         },
         title: {
+fontColor:"white",
+          display: true,
           display: true,
           text: "Linguistic Tone"
         }
@@ -169,9 +185,15 @@
         }]
       },
       options: {
-        scales: {
+                scales: {
+xAxes: [{
+ticks: {
+fontColor:"white"
+}
+}],
             yAxes: [{
                 ticks: {
+fontColor:"white",
                     beginAtZero:true
                 }
             }]
@@ -180,6 +202,7 @@
           display: false
         },
         title: {
+fontColor:"white",
           display: true,
           text: "Social Tone"
         }
@@ -203,15 +226,15 @@
       },
       options: {
         legend: {
+fontColor: "white",
           display: true
         },
         title: {
           display: true,
+fontColor: "white",
           text: "Keyword Matches"
         }
       }
     });
-    
-    $(window).resize(respondCanvas);
   </script>
 </body>
