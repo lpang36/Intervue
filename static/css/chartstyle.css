@@ -32,3 +32,7 @@ background-attachment: fixed;
 min-height:100%;
 min-width:100%;
 }
+
+#div1, #nameEntry {
+margin: auto;
+}
