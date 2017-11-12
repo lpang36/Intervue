@@ -11,12 +11,11 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <script>
   window.onload = function() {
-    var socket = io("http://localhost:5000",{
+    var socket = io("http://intervue.herokuapp.com",{
       transports: [
         'websocket',
         'flashsocket',
