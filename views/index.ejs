@@ -11,38 +11,38 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <script>
-window.onload = function() {
-  var socket = io("http://localhost:5000",{
-  transports: [
-    'websocket', 
-    'flashsocket', 
-    'htmlfile', 
-    'xhr-polling', 
-    'jsonp-polling', 
-    'polling'
-  ]
-});
-  socket.on('question',function(data) {
-    if (data.username!="<%= user.name %>")
+  window.onload = function() {
+    var socket = io("http://localhost:5000",{
+      transports: [
+        'websocket',
+        'flashsocket',
+        'htmlfile',
+        'xhr-polling',
+        'jsonp-polling',
+        'polling'
+      ]
+    });
+    socket.on('question',function(data) {
+      if (data.username!="<%= user.name %>")
       return;
-    var li = "<li>";
-    $("ul").append(li.concat(data.question.question));
-    //$("button").attr('disabled','disabled');
-    //$("button").css("background-color", "#8585e0");
-  });
-  socket.on('answer',function(data) {
-    if (data.username!="<%= user.name %>")
+      var li = "<li>";
+      $("ul").append(li.concat(data.question.question));
+      //$("button").attr('disabled','disabled');
+      //$("button").css("background-color", "#8585e0");
+    });
+    socket.on('answer',function(data) {
+      if (data.username!="<%= user.name %>")
       return;
-    displayData(data);
-  });
-  var name3;
-    document.getElementById("name2").innerHTML = "Hi, " + "<%= user.name %>" + ". Let's help you prepare for your interview.";
+      displayData(data);
+    });
+    var name3;
+    document.getElementById("name2").innerHTML = "Hi, " + "<%= user.name %>" + ".";
     setTimeout (function(){document.getElementById("questionEntry").style.display = "block";}, 1000);
-}
-
+  }
   function displayData(data) {
     var li = "<li>";
     $("ul").append(li.concat("Your answer: " + data.answer));
@@ -58,12 +58,24 @@ window.onload = function() {
     $("button").removeAttr('disabled');
   }
   </script>
-<CENTER>
-<div id="questionEntry">
-  <h3 id="name2"> </h3>
-<!-- <button type="button" onclick="addRandomQuestion(0, 9, questions)">Generate Interview Question</button> -->
-<ul id="questionList"></ul>
-</div>
-</CENTER>
+  <div class="diy-slideshow">
+    <figure class="show"> <img id="bkgd" src="https://lh5.googleusercontent.com/FkzosRYmqJlhUiqYhLQBdvXwlvWwhSuSr-QOVLCG-C7r4gAVEFMwE9nQgVrlTSR20ZoAJMjJW-PmV83ccJ0C=w1920-h900-rw"/>
+      <div class="slideOverlay slideCopy text-center">
+        <div id="questionEntry">
+          <h1 id="name2"> </h1>
+          <h2 id="name3">Let's get you prepared for your interview.</h2>
+          <!-- <button type="button" onclick="addRandomQuestion(0, 9, questions)">Generate Interview Question</button> -->
+          <ul id="questionList"></ul>
+        </div>
+      </div>
+    </figure>
+  </div>
+  <div class="slideOverlay container-fluid">
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <img id="title" src="https://lh3.googleusercontent.com/8unVTiBN5IP35MSewx21pdq3jOiyQUMbqsS47Q5LXRR-hySaUU-K4e8EGHua5pu8g8tGVIUwuTiqUNf35n5z=w1920-h949-rw"/>
+      </div>
+    </nav>
+  </div>
 </body>
 </html>
