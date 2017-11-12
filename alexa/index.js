@@ -125,20 +125,17 @@ function handleTestRequest(intent, session, callback, param) {
 }
 
 // ------- Helper functions to build responses -------
-
 function buildSpeechletResponseWithoutCard(output, repromptText, shouldEndSession) {
     return {
         outputSpeech: {
             type: "PlainText",
             text: output
-        },
-        reprompt: {
+        }, reprompt: {
             outputSpeech: {
                 type: "PlainText",
                 text: repromptText
             }
-        },
-        shouldEndSession: shouldEndSession
+        },shouldEndSession: shouldEndSession
     };
 }
 
