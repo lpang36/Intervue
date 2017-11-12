@@ -1,5 +1,3 @@
-'use strict';
-
 const Alexa = require('alexa-sdk');
 var http = require('http');
 var https = require('https');
@@ -23,14 +21,14 @@ exports.handler = function (event, context) {
             onLaunch(event.request,
                 event.session,
                 function callback(sessionAttributes, speechletResponse) {
-                    context.callback = buildResponse(sessionAttributes, speechletResponse);
+                    context.succeed(buildResponse(sessionAttributes, speechletResponse));
                 });
         } else if (event.request.type === "IntentRequest") {
             onIntent(event.request,
                 event.session,
                 function callback(sessionAttributes, speechletResponse) {
                     console.log("succeed");
-                    context.callback = buildResponse(sessionAttributes, speechletResponse);
+                    context.succeed(buildResponse(sessionAttributes, speechletResponse));
                 });
         } else if (event.request.type === "SessionEndedRequest") {
             onSessionEnded(event.request, event.session);
@@ -39,10 +37,13 @@ exports.handler = function (event, context) {
     } catch (e) {
         context.fail("Exception: " + e);
     }
+
 }
 
 function onSessionStarted(sessionStartedRequest, session) {
     console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId + ", sessionId=" + session.sessionId);
+      //this.emit(':talk',"begun");
+        console.log("worked on session started");
 }
 
 /**
@@ -53,6 +54,9 @@ function onLaunch(launchRequest, session, callback) {
 
     var speechOutput = "Do you want to slay your next interview?"
     callback(session.attributes, buildSpeechletResponseWithoutCard(speechOutput, "", "false"));
+
+    //this.emit(':talk',"launch");
+    console.log("worked on launch");
 }
 
 /**
@@ -62,10 +66,10 @@ function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
     var param = "";
-
+    //this.emit(':talk',"intent"); // broken
     if (intentName === 'LaunchRequest'){
           param = "/question/"+user;
-          var output = "no I am shook";
+          var output = "help me";
           callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "false"));
 
     } else if (intentName === 'AlexaAsks') {
@@ -79,31 +83,34 @@ function onIntent(intentRequest, session, callback) {
     } else {
           throw new Error('Invalid intent');
     }
-    var self = this;
-   handleTestRequest(intent, session, callback, param, self);
+   handleTestRequest(intent, session, callback, param);
 }
+
+
 /**
  * Called when the user ends the session.
  * Is not called when the skill returns shouldEndSession=true.
  */
 function onSessionEnded(sessionEndedRequest, session) {
     console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId + ", sessionId=" + session.sessionId);
-
+    //this.emit(':talk',"bye");
 }
 
-function handleTestRequest(intent, session, callback, param, self) {
+function handleTestRequest(intent, session, callback, param) {
+  // var self = this;
+  //this.emit(':talk',"testing101");
     console.log("intent: ", util.inspect(intent, {depth: 5}));
     console.log("session: ", util.inspect(session, {depth: 5}));
     var urlData = param;
     var url = serviceHost;
-    httpGet(url, urlData, (response) => {
+    httpGet(url, urlData, function (response) {
         console.log(response);
         const speechOutput = response.question;
-        self.emit(':ask', speechOutput);
+        // self.emit(':ask', speechOutput);
         //var responseData = JSON.parse(response);
-        //callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "false"));
+        buildSpeechletResponseWithoutCard(speechOutput, "", "false");
     }, function (errorMessage){
-            //callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "false"));
+            callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "false"));
         }
       );
 }

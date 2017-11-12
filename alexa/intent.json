@@ -5,7 +5,8 @@
       "slots": [
         {
           "name": "answer",
-          "type": "AMAZON.LITERAL"
+          "type": "AMAZON.LITERAL",
+          "keywords": ""
         },
       ]
     },
