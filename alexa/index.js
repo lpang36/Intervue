@@ -69,8 +69,8 @@ function onIntent(intentRequest, session, callback) {
     //this.emit(':talk',"intent"); // broken
     if (intentName === 'LaunchRequest'){
           param = "/question/"+user;
-          var output = "help me";
-          callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "false"));
+          //var output = "help me";
+          //callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "false"));
 
     } else if (intentName === 'AlexaAsks') {
         var responseString = getResponse();
@@ -105,10 +105,11 @@ function handleTestRequest(intent, session, callback, param) {
     var url = serviceHost;
     httpGet(url, urlData, function (response) {
         console.log(response);
-        const speechOutput = response.question;
+        var speechOutput = JSON.parse(response).question;
         // self.emit(':ask', speechOutput);
         //var responseData = JSON.parse(response);
-        buildSpeechletResponseWithoutCard(speechOutput, "", "false");
+        callback(session.attributes,buildSpeechletResponseWithoutCard(speechOutput, "", "false"));
+        console.log(speechOutput);
     }, function (errorMessage){
             callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "false"));
         }
