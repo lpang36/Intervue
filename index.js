@@ -144,24 +144,25 @@ function analyzeKeywords(params,question,tone,req,res) {
         user.save();
       }
     });
-    var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
+    //var advice = "Your score on this question was "+score+". "+question.defaultAdvice;
+    var advice = question.defaultAdvice;
     var fillerText = params.textToAnalyze.toUpperCase();
     if((/\bUM\b/).test(fillerText) ||
        (/\bUH\b/).test(fillerText) ||
        (/\bAH\b/).test(fillerText) ||
        (/\bLIKE\b/).test(fillerText) ||
        (/\bOKAY\b/).test(fillerText))
-      advice+="Try to use less filler words.";
+      advice+="Try to use less filler words";
     else if ((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5)&&tone[7]>0.5)
-      advice+="Try to sound more positive and confident in your answer.";
+      advice+="Try to sound more positive and confident in your answer";
     else if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
       advice+="Try to sound more positive";
     else if(tone[7] > 0.5)
       advice+="Try to sound more confident in your answer";
     else if (tone[3]>0.6&&tone[6]>0.6)
-      advice+="You did well by sounding positive and confident.";
+      advice+="You did well by sounding positive and confident";
     else if(tone[3] > 0.6)
-      advice+="You did well by sounding positive.";
+      advice+="You did well by sounding positive";
     else if(tone[6] > 0.6)
       advice+="You did well by sounding confident";
     if (keywordMatches<0.5) {
@@ -171,9 +172,9 @@ function analyzeKeywords(params,question,tone,req,res) {
       });
     }
     if (length>700)
-      advice+="Try to keep your response to a shorter time.";
+      advice+="Try to keep your response to a shorter time";
     else if (length<50)
-      advice+="Try to give a more detailed response.";
+      advice+="Try to give a more detailed response";
     io.emit('answer',{advice: advice, username: req.params.username, tone: tone, score: score, answer: params.textToAnalyze});
     console.log(advice);
     res.send({

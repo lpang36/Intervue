@@ -1,0 +1,14 @@
+canvas { 
+  width: 100%;
+  height: auto;
+}
+
+h1 {
+  width: 100%;
+  text-align:center;
+}
+
+.row {
+  text-align:center;
+  width: fit-content;
+}  
