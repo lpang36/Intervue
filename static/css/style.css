@@ -1,10 +1,24 @@
 .chartdiv {
-    width:400px;
-    height:400px;
+  width:400px;
+  height:400px;
 }
 
-* {
-  font-family: 'Open Sans', sans-serif;
+
+@media only screen and (max-width: 1080px) {
+  #name2 {
+    margin: 0!important;
+    font-size: 24pt!important;
+    width:100%;
+  }
+
+  #name3 {
+    margin: 0!important;
+    font-size: 18pt!important;
+  }
+
+  #title {
+    width: 175px!important;
+  }
 }
 
 ul {
@@ -16,15 +30,36 @@ li {
   margin-top: 15px;
   margin-bottom: 15px;
   animation: fadein 1s;
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
 }
 
 img {
   display: inline-block;
+  width: 300px;
 }
 
 #div1 {
   display: inline-block;
   margin: 0 auto;
+}
+
+#name2 {
+  text-align:center;
+  margin-left: 100px;
+  margin-right: 100px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 1200;
+  font-size: 72pt;
+}
+
+#name3 {
+  text-align:center;
+  margin-left: 100px;
+  margin-right: 100px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 32pt;
 }
 
 h1 {
@@ -44,10 +79,79 @@ button {
 }
 
 #title {
-  color: #00caff;
-  float:right;
-  font-size: 36pt;
-  display: inline-block;
+  text-align:left;
+  width:220px;
+  margin-top:20px;
+}
+
+#bkgd {
+  width:100%!important;
+}
+
+.slideOverlay {
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .slideCopy {
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slideOverlay h1 {
+        font-size: 4.5em;
+    }
+
+    .slideOverlay p {
+        font-size: 1.15em;
+    }
+
+
+.diy-slideshow {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+figure {
+  position: absolute;
+  opacity: 0;
+  transition: 1s opacity;
+  margin: 0;
+}
+
+figure img {
+  object-fit: cover;
+  height: 100vh;
+  width: 100vw;
+}
+
+figcaption {
+  color: white;
+  z-index: 15;
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  font-family: sans-serif;
+  color: #fff;
+}
+
+figure.show {
+  opacity: 1;
+  position: static;
+  transition: 1s opacity;
+}
+
+
+body {
+  margin: 0;
 }
 
 @keyframes fadein {
