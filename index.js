@@ -119,7 +119,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     userKeywords.forEach(function(word){
       question.keywords.forEach(function(keyword){
         var flag = false;
-        if ((keyword.substr(0,floor(max(4,keyword.length*0.75)))==word.substr(0,floor(max(4,keyword.length*0.75))))&&!flag) {
+        if ((keyword.substr(0,Math.floor(max(4,keyword.length*0.75)))==word.substr(0,Math.floor(max(4,keyword.length*0.75))))&&!flag) {
           count++;
           flag = true;
         }
