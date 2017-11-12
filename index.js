@@ -10,8 +10,8 @@ process.env.MONGOHQ_URL ||
 'mongodb://localhost/hp';
 var token;
 var categoryMap = {
-  "behavioural": 0,
-  "technical": 1
+  "Behavioural": 0,
+  "Technical": 1
   //update as needed
 };
 
@@ -81,6 +81,7 @@ app.get('/question/:username', function(req,res) {
     var random = Math.floor(Math.random()*count);
     Question.findOne({}).skip(random).lean().exec(function (err,question) {
       io.emit('question',{question: question, username: req.params.username});
+      console.log(question);
       res.send(JSON.stringify(question));
       res.end();
     });
@@ -104,7 +105,7 @@ function analyzeKeywords(params,question,tone,req,res) {
       "keywords": {
         "sentiment": false,
         "emotion": false,
-        "limit": question.keywords.length
+        "limit": question.keywords.length*5
       }
     }
   }
@@ -118,7 +119,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     userKeywords.forEach(function(word){
       question.keywords.forEach(function(keyword){
         var flag = false;
-        if ((keyword.indexOf(word)!=-1||word.indexOf(keyword)!=-1)&&!flag) {
+        if ((keyword.substr(0,floor(max(4,keyword.length*0.75)))==word.substr(0,floor(max(4,keyword.length*0.75))))&&!flag) {
           count++;
           flag = true;
         }
@@ -151,16 +152,20 @@ function analyzeKeywords(params,question,tone,req,res) {
        (/\bLIKE\b/).test(fillerText) ||
        (/\bOKAY\b/).test(fillerText))
       advice+="Try to use less filler words.";
+    else if ((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5)&&tone[7]>0.5)
+      advice+="Try to sound more positive and confident in your answer.";
     else if((tone[0] > 0.5) || (tone[4] > 0.5) || (tone[2] > 0.5))
       advice+="Try to sound more positive";
     else if(tone[7] > 0.5)
       advice+="Try to sound more confident in your answer";
+    else if (tone[3]>0.6&&tone[6]>0.6)
+      advice+="You did well by sounding positive and confident.";
     else if(tone[3] > 0.6)
       advice+="You did well by sounding positive.";
     else if(tone[6] > 0.6)
       advice+="You did well by sounding confident";
     if (keywordMatches<0.5) {
-      advice+="You should include some of these words in your reponse: ";
+      advice+="You should include some of these words or concepts in your reponse: ";
       question.keywords.forEach(function(word){
         advice+=word+", ";
       });
@@ -170,6 +175,7 @@ function analyzeKeywords(params,question,tone,req,res) {
     else if (length<50)
       advice+="Try to give a more detailed response.";
     io.emit('answer',{advice: advice, username: req.params.username, tone: tone, score: score, answer: params.textToAnalyze});
+    console.log(advice);
     res.send({
       text: advice //advice to give
     });
