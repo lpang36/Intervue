@@ -3,9 +3,25 @@
 const Alexa = require('alexa-sdk');
 var http = require('http');
 var https = require('https');
-var util = require('util');
 const user = "John";
+var util = require('util');
 var qid = 0;
+
+function get() {
+    var request = require('request');
+    var user = "John";
+    var text = "This is an answer";
+    var id = 0;
+
+    request.get("https://intervue.herokuapp.com/question/"+user, function(err,res){
+      console.log(res.body);
+    });
+
+    var url = encodeURI(text+"/"+id+"/"+user);
+    request.get("https://intervue.herokuapp.com/answer/"+url, function(err,res) {
+      console.log(res.body);
+    });
+};
 
 const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
 var serviceHost = 'https://intervue.herokuapp.com';
@@ -36,7 +52,7 @@ exports.handler = function (event, context) {
     } catch (e) {
         context.fail("Exception: " + e);
     }
-};
+}
 
 function questions() {
   var numQuestions = ["What is your greatest strength?", "What is your greatest weakness?", "Tell me about yourself.", "Why should we hire you?", "What are your salary expectations?", "Why are you leaving or have left your job?", "Why do you want this job?", "How do you handle stress and pressure?", "Describe a difficult work situation / project and how you overcame it.", "What are your goals for the future?"];
@@ -65,27 +81,23 @@ function onIntent(intentRequest, session, callback) {
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
     var param = "";
 
-    if (intentName === 'AlexaAsks') {
-        questions();
-        param = "/question/"+user;
-      }
-
-      else if (intentName === 'LaunchRequest'){
-        var output = "gucci gucci louis louis fendi fendi prada";
-         callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
-         httpGet(serviceHost, "", callback, errorCallback); 
-      }
-
-    else if (intentName === 'UserAnswers') {
+    if (intentName === 'LaunchRequest'){
+          param = "/question/"+user;
+          var output = "where is the pizza";
+          callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+          get();
+    } else if (intentName === 'AlexaAsks') {
+         get();
+    } else if (intentName === 'UserAnswers') {
           var message = this.event.answer.value;
-        param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
-    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
+          param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
+          get();
+    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent' || 'AMAZON.HelpIntent') {
             handleSessionEndRequest(callback);
     } else {
           throw new Error('Invalid intent');
     }
-
-    handleTestRequest(intent, session, callback, param);
+   handleTestRequest(intent, session, callback, param);
 }
 /**
  * Called when the user ends the session.
@@ -106,12 +118,9 @@ function handleTestRequest(intent, session, callback, param) {
         var responseData = JSON.parse(response);
         var output = 'OK, asked the service';
         callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
-        },
-        function (errorMessage)
-        {
-        callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "true"));
+    }, function (errorMessage){
+            callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "true"));
         }
-
       );
 }
 
