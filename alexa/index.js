@@ -7,16 +7,6 @@ var util = require('util');
 const user = "John";
 var qid = 0;
 
-http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-        resp.on('data', function(ip) {
-            console.log("This IP address is " + ip.toString());
-        });
-        resp.on('error',
-            function() {
-                console.log('oops');
-            });
-    });
-
 const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
 var serviceHost = 'https://intervue.herokuapp.com';
 
@@ -27,7 +17,6 @@ exports.handler = function (event, context) {
         if (event.session.new) {
             onSessionStarted({requestId: event.request.requestId}, event.session);
         }
-
         if (event.request.type === "LaunchRequest") {
             onLaunch(event.request,
                 event.session,
@@ -73,20 +62,26 @@ function onLaunch(launchRequest, session, callback) {
  */
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
-
     var intent = intentRequest.intent, intentName = intentRequest.intent.name;
     var param = "";
 
     if (intentName === 'AlexaAsks') {
         questions();
         param = "/question/"+user;
-    } else if (intentName === 'UserAnswers') {
-            var message = this.event.answer.value;
+      }
+
+  else if (intentName === 'LaunchRequest'){
+           var output = "gucci gucci louis louis fendi fendi prada"; 
+         callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "true"));
+      }
+
+    else if (intentName === 'UserAnswers') {
+          var message = this.event.answer.value;
         param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
             handleSessionEndRequest(callback);
     } else {
-            throw new Error('Invalid intent');
+          throw new Error('Invalid intent');
     }
 
     handleTestRequest(intent, session, callback, param);

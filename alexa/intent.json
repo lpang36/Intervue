@@ -23,7 +23,9 @@
       "slots": [
         {
           "name": "alexaWake",
-          "type": "AMAZON.LITERAL"
+          "type": "AMAZON.LITERAL",
+          "samples": ["to please help me get a job",
+         "to help me prepare for an interview, "]
         },
       ]
     },
