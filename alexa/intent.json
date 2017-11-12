@@ -5,12 +5,22 @@
       "slots": [
         {
           "name": "answer",
+          "type": "AMAZON.LITERAL",
+          "samples": "My answer is I am awesome"
+        },
+      ]
+    },
+    {
+      "intent": "AlexaQuestion",
+      "slots": [
+        {
+          "name": "question",
           "type": "AMAZON.LITERAL"
         },
       ]
     },
     {
-      "intent": "AlexaAsks",
+      "intent": "AlexaFeedback",
       "slots": [
         {
           "name": "feedback",
@@ -22,10 +32,11 @@
       "intent": "LaunchRequest",
       "slots": [
         {
-          "name": "alexaWake",
+          "name": "value",
           "type": "AMAZON.LITERAL",
-          "samples": ["to please help me get a job",
-         "to help me prepare for an interview","are you woke", "if you still work"]
+          "samples": ["how to ace my interview {value}", "how to get a job {value}",
+            "how to crack the coding interview {value}",
+        "how do I get cali {value}", "My answer is {value}"]
         },
       ]
     },

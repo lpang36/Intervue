@@ -4,6 +4,7 @@ var https = require('https');
 const user = "John";
 var util = require('util');
 var qid = 0;
+var count = 0;
 
 const APP_ID = 'amzn1.ask.skill.767ff4a2-1513-4028-a37b-1476f0317390';
 var serviceHost = 'https://intervue.herokuapp.com';
@@ -13,7 +14,7 @@ exports.handler = function (event, context) {
   //alexa.registerHandlers(handlers);
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
-
+console.log(event.request.type);
         if (event.session.new) {
             onSessionStarted({requestId: event.request.requestId}, event.session);
         }
@@ -27,7 +28,6 @@ exports.handler = function (event, context) {
             onIntent(event.request,
                 event.session,
                 function callback(sessionAttributes, speechletResponse) {
-                    console.log("succeed");
                     context.succeed(buildResponse(sessionAttributes, speechletResponse));
                 });
         } else if (event.request.type === "SessionEndedRequest") {
@@ -52,7 +52,7 @@ function onSessionStarted(sessionStartedRequest, session) {
 function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId + ", sessionId=" + session.sessionId);
 
-    var speechOutput = "Do you want to slay your next interview?"
+    var speechOutput = "Welcome to Interview. Please try another interview question trigger.";
     callback(session.attributes, buildSpeechletResponseWithoutCard(speechOutput, "", "false"));
 
     //this.emit(':talk',"launch");
@@ -62,28 +62,66 @@ function onLaunch(launchRequest, session, callback) {
 /**
  * Called when the user specifies an intent for this skill.
  */
+var intentName = 'LaunchRequest';
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
-    var intent = intentRequest.intent, intentName = intentRequest.intent.name;
+    var intent = intentRequest.intent;
+
     var param = "";
+    console.log("intentName: "+intentName);
+    console.log("intent: "+intent);
     //this.emit(':talk',"intent"); // broken
+
     if (intentName === 'LaunchRequest'){
+      if (count==0) {
           param = "/question/"+user;
           //var output = "help me";
           //callback(session.attributes, buildSpeechletResponseWithoutCard(output, "", "false"));
-
-    } else if (intentName === 'AlexaAsks') {
-        var responseString = getResponse();
-    } else if (intentName === 'UserAnswers') {
-          var message = intentRequest.intent.slots.answer.value;
+          console.log("launch request executed");
+          handleTestRequest(intent, session, callback, param);
+        }  else {
+          //console.log(JSON.stringify(intentRequest.intent.slots));
+          //console.log(JSON.parse(intentRequest.intent.slots));
+          var message = "it is 5am i want to die please send help";
+          //var message = intentRequest.intent.slots.samples[4];
           param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
+          handleMessageRequest(intent, session, callback, param);
+            console.log("user answer request executed");
+           intentName = 'UserAnswers';
+        }
+    } else if (intentName === 'AlexaQuestion') {
+      param = "/question/"+user;
+        var responseString = getResponse();
+          console.log("question executed");
+        handleTestRequest(intent, session, callback, param);
+          intentName = 'UserAnswers';
+    } else if (intentName === 'UserAnswers') {
+          console.log("to string: "+JSON.stringify(intentRequest));
+          console.log("to json: "+JSON.parse(intentRequest));
+          var message = this.event.IntentRequest.intent.slots;
+          param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
+          handleMessageRequest(intent, session, callback, param);
           // get();
-    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent' || 'AMAZON.HelpIntent') {
+            console.log("user answer request executed");
+            intentName = 'AlexaFeedback';
+    } else if (intentName === 'AlexaFeedback') {
+        var message = "Hello";
+      //     var message = this.event.IntentRequest.intent.slots.answer.value;
+          console.log(message);
+          param = encodeURI("/answer/"+message+"/"+qid+"/"+user);
+          handleMessageRequest(intent, session, callback, param);
+          // get();
+            console.log("user answer request executed");
+            intentName = 'AlexaQuestion';
+    } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent' || intentName === 'AMAZON.HelpIntent') {
             handleSessionEndRequest(callback);
+              console.log("stop request executed");
     } else {
           throw new Error('Invalid intent');
     }
-   handleTestRequest(intent, session, callback, param);
+count++;
+console.log(count);
+
 }
 
 
@@ -105,11 +143,34 @@ function handleTestRequest(intent, session, callback, param) {
     var url = serviceHost;
     httpGet(url, urlData, function (response) {
         console.log(response);
-        var speechOutput = JSON.parse(response).question;
+        var speechOutput = "Sure. Here's a practice interview question. "
+        speechOutput += JSON.parse(response).question;
         // self.emit(':ask', speechOutput);
         //var responseData = JSON.parse(response);
         callback(session.attributes,buildSpeechletResponseWithoutCard(speechOutput, "", "false"));
+        qid = JSON.parse(response).id;
         console.log(speechOutput);
+    }, function (errorMessage){
+            callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "false"));
+        }
+      );
+}
+
+function handleMessageRequest(intent, session, callback, param) {
+  // var self = this;
+  //this.emit(':talk',"testing101");
+    console.log("intent: ", util.inspect(intent, {depth: 5}));
+    console.log("session: ", util.inspect(session, {depth: 5}));
+    var urlData = param;
+    var url = serviceHost;
+    httpGet(url, urlData, function (response) {
+        console.log(response);
+        var speechOutput = response;
+        console.log(speechOutput);
+        // self.emit(':ask', speechOutput);
+        //var responseData = JSON.parse(response);
+        callback(session.attributes,buildSpeechletResponseWithoutCard(speechOutput, "", "false"));
+        console.log("message sent");
     }, function (errorMessage){
             callback(session.attributes, buildSpeechletResponseWithoutCard(errorMessage, "", "false"));
         }
